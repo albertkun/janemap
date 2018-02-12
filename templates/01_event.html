@@ -1,0 +1,11 @@
+{% for event in events %}
+
+<h1>Welcome the {{event.event_name}}</h1>
+
+<h3>It is happening here {{event.date}}</h3>
+<img src="https://maps.googleapis.com/maps/api/staticmap?center={{event.lat}},{{event.lon}}&zoom=15&size=400x400&key=AIzaSyBWRoEn8xdzMIDanLX2jNagqYHPaI_dqY4">
+<p>
+	
+<a href="/.">Go back home</a>
+
+{% endfor %}

@@ -1,0 +1,6 @@
+flask
+peewee
+psycopg2
+flask-wtf
+requests
+flask-marshmallow

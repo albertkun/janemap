@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Default</title>
+</head>
+<body>
+
+<h1>Welcome to Jane Map {{count}}</h1>
+<p class="lead">Let's get started on electing a progressive mayor for San Francisco.</p>
+<h5>Upcoming events:</h5>
+<ul>
+	{% for event in events %}
+	<p><a href="/events/{{event.uid}}">{{event.event_name}}</a></p>
+	{% endfor %}
+</ul>
+    <p class="lead">
+    <a href="#" class="btn btn-lg btn-secondary">Open Jane Map</a>
+    </p>
+</body>
+</html>
+{% endblock %}
