@@ -8,7 +8,7 @@ from config import Config
 # db = PostgresqlDatabase('janemap', user='postgres', password='password',
                            # host='127.0.0.1', port=5432)
 
-db = PostgresqlDatabase(Config.DATABASE, user=Config.USERNAME, password=Config.SECRET_KEY,
+db = PostgresqlDatabase(database=Config.DATABASE, user=Config.USERNAME, password=Config.SECRET_KEY,
                           host=Config.HOST, port=5432)
 # Connect to our database.
 db.connect()
