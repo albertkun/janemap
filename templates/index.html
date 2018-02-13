@@ -2,35 +2,75 @@
 {% block content %}
 
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Jane Map</title>
+<title>Jane Map</title>
 
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
-    <link rel="stylesheet" href="../static/css/leaflet.css"/>
-    <script src="../static/js/leaflet.js"></script>
+<link rel="stylesheet" href="../static/css/leaflet.css"/>
+<script src="../static/js/leaflet.js"></script>
+
+<style>
+	body { margin:0; padding:0; }
+	#map { position:absolute; top:0; bottom:0; width:100%; }
 
 
-</head>
-<body>
-	<header class="masthead mb-auto">
-		<div class="inner">
-		  <div class="masthead-brand"><p class="lead"><b style="font-size: 36px">Jane Map</b> Let's get started on electing a progressive mayor for San Francisco. <a href="/host"><button type="button" class="btn btn-primary">Host an Event</button></a></p>
-		</div>
-	</header>
+.map-overlay {
+	z-index: 9999;
+    font: 10px/25px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 300px;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    opacity: 0.9;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #fff;
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+</style>
+
+
+<div id="map"></div>
+
+<div class='map-overlay top'>
+	<div class='map-overlay-inner'>
+		<p class="lead"><b style="font-size: 24px">Jane Map</b> 
+			<br>Let's get started on electing a progressive mayor for San Francisco. <a href="/host">
+			<br>
+			<button type="button" class="btn btn-primary">Host an Event</button></a></p>
+		<hr>
+		{% for event in events %}
+			<div class="card">
+				<div class="card-header">
+					{{event.full_address()}}
+				</div>
+				<div class="card-body">
+					<h5 class="card-title">{{event.event_name}}</h5>
+					<p class="card-text">{{event.host_name}}</p>
+				</div>
+			</div>
+			<br>
+		{% endfor %}
 
 
 
-<div class="wrapper-" id="mapid" style="width: 100%; height: 400px;"></div>
+	</div>
+</div>
+
+
+
+
+
 <script>
 
 	var mapCoords = [37.770715, -122.433421]
-	var map = L.map('mapid').setView(mapCoords, 12);
+	var map = L.map('map').setView(mapCoords, 12);
 	L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
@@ -77,7 +117,4 @@
 	{% endfor %}
 </script>
 
-	
-</body>
-</html>
 {% endblock %}

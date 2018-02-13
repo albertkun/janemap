@@ -5,8 +5,11 @@ from flask import session
 from config import Config
 # Connect to the PostgresqlDatabase
 
-db = PostgresqlDatabase('janemap', user='postgres', password='password',
-                           host='127.0.0.1', port=5432)
+# db = PostgresqlDatabase('janemap', user='postgres', password='password',
+                           # host='127.0.0.1', port=5432)
+
+db = PostgresqlDatabase('vfqqghrb', user='vfqqghrb', password='QgVP60gxsBDc_5KcV5KRowCydpfGADop',
+                          host='hanno.db.elephantsql.com', port=5432)
 # Connect to our database.
 db.connect()
 
