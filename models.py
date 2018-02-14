@@ -58,7 +58,7 @@ class Event(Model):
   geocode_attempt = BooleanField(default=False)
 
   def full_address(self):
-    return "{},{},{}".format(self.address,self.city,self.state)
+    return "{}, {}, {}".format(self.address,self.city,self.state)
 
   
   class Meta:

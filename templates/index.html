@@ -8,18 +8,45 @@
 
 <link rel="stylesheet" href="../static/css/leaflet.css"/>
 <script src="../static/js/leaflet.js"></script>
+<script type="text/javascript">
+	var event_alias; 
+	event_alias={
+			official: 'Official',
+			canvass:  'Canvassing',
+			phone: 'Phonebanking',
+			voter: 'Voter Registration',
+			meeting: 'Meeting',
+			fund: 'Fundraising',
+			rally: 'Rally',
+			other: 'Other'
+		};
+
+	var colors;
+	colors = {
+			official: '#AF1E23',
+			canvass:  'orange',
+			phone: 'purple',
+			voter: 'red',
+			meeting: 'blue',
+			fund: 'orange',
+			rally: '#AF1E23',
+			other: 'green'
+		}	
+
+
+
+</script>
 
 <style>
-	body { margin:0; padding:0; }
-	#map { position:absolute; top:0; bottom:0; width:100%; }
-
+	body { margin:0; padding-top:75px; }
+	#map {top:75px; position: absolute;bottom:0; width:100%; }
 
 	.map-overlay {
 		z-index: 9999;
-	    font: 10px/25px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	    font: 10px/25px;
 	    position: absolute;
 	    width: 300px;
-	    top: 0;
+	    top: 75px;
 	    right: 0;
 	    padding: 10px;
 	    opacity: 0.9;
@@ -32,27 +59,61 @@
 	    padding: 10px;
 	    margin-bottom: 10px;
 	}
+	#header{
+		margin-top:-75px;
+		margin-left: 25px; 
+	}
 
+	#host-button{
+		margin-top:-50px;
+		margin-right: 50px;
+		right: 25px;
+		float:right;
+	}	
+	.category{
+		display:inline-block;
+		border-radius: 1px;
+		padding-right:15px;
+		padding-left: 15px;
+		opacity: .9;
+		background: black;
+		text-transform: capitalize;
+		color:white;
+	}
+	.popup-category{
+		display:inline-block;
+		border-radius: 1px;
+		padding-right:15px;
+		padding-left: 15px;
+		opacity: .5;
+		color:white;
+	}
 </style>
-
+<div id="header">
+	<p class="lead"><b style="font-size: 24px">Jane Map</b> 
+	<br>Let's get started on electing a progressive mayor for San Francisco. <a href="/host">
+	<br>
+</div>
+	<a href="/host"><button type="button" id="host-button" class="btn btn-primary">Host an Event</button></a></p></div>
+<hr>
 
 <div id="map"></div>
 
 <div class='map-overlay top'>
 	<div class='map-overlay-inner'>
-		<p class="lead"><b style="font-size: 24px">Jane Map</b> 
-			<br>Let's get started on electing a progressive mayor for San Francisco. <a href="/host">
-			<br>
-			<button type="button" class="btn btn-primary">Host an Event</button></a></p>
-		<hr>
+
 		{% for event in events %}
 			<div class="card">
 				<div class="card-header">
-					{{event.full_address()}}
+					<h5 class="card-title" style="color:#AF1E23;">{{event.event_name}}</h5>
+					<div class='btn-xsm btn-outline dark category''>{{event.event_type}}
+					</div>
 				</div>
 				<div class="card-body">
-					<h5 class="card-title">{{event.event_name}}</h5>
-					<p class="card-text">{{event.host_name}}</p>
+					<p class="card-text">Hosted by: {{event.host_name}}<br>
+					Event Date: {{event.event_date}}<br>Event Time: {{event.event_time}}</p>
+					<b>{{event.full_address()}}</b>
+					<a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7705122,-122.4619007,12z/><button class='btn-xsm btn-info'>Get Directions</button></class></a>
 				</div>
 			</div>
 			<br>
@@ -69,9 +130,9 @@
 
 <script>
 
-	var mapCoords = [37.770715, -122.433421]
+	var mapCoords = [37.770715, -122.392421]
 	var map = L.map('map').setView(mapCoords, 12);
-	L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+	L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
 	}).addTo(map);
@@ -83,34 +144,14 @@
 		if (markerData.type == 'office'){
 			L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<b>"+markerData.name+"</b>").addTo(map);						
 		}
-		event_alias={
-			official: 'Official',
-			canvass:  'Canvassing',
-			phone: 'orange',
-			voter: 'red',
-			meeting: 'black',
-			fund: 'black',
-			rally: 'Rally',
-			other: 'Other'
-		}
 
-		colors = {
-			official: '#AF1E23',
-			canvass:  'black',
-			phone: 'orange',
-			voter: 'red',
-			meeting: 'black',
-			fund: 'black',
-			rally: 'black',
-			other: 'green'
-		}
 		if (markerData.type=='official'){
 			markerOptions={
 			radius: 10,
 			fillColor: '#AF1E23',
-			color: "white",
-			opacity:1,
-			fillOpacity:.75
+			color: "black",
+			opacity:.7,
+			fillOpacity:.70
 			}
 		}
 		else{
@@ -125,8 +166,9 @@
                 }
             }
         console.log(markerData)
-		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h3>"+markerData.name+"</h3><div class='btn btn-danger'>"+event_alias[markerData.type]+"</div><br>"+markerData.date).addTo(map);
+		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7705122,-122.4619007,12z/><button class='btn-xsm btn-info'>Get Directions</button></class></a>").addTo(map);
 	}
+
 	var popup = L.popup();
 
 	{% for event in events %}
@@ -134,6 +176,7 @@
 			lat: {{event.lat}},
 			lon: {{event.lon}},
 			date: "{{event.event_date}}",
+			time: "{{event.event_time}}",
 			name: "{{event.event_name}}",
 			type: "{{event.event_type}}"
 		}
