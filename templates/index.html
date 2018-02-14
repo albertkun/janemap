@@ -113,7 +113,7 @@
 					<p class="card-text">Hosted by: {{event.host_name}}<br>
 					Event Date: {{event.event_date}}<br>Event Time: {{event.event_time}}</p>
 					<b>{{event.full_address()}}</b>
-					<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7705122,-122.4619007,12z/ target="_blank"><button class='btn-xsm btn-info'>Get Directions</button></class></a>
+					<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7591006,-122.5050889,12z/ target="_self"><button class='btn-xsm btn-info'>Get Directions</button></class></a>
 				</div>
 			</div>
 			<br>
@@ -134,7 +134,7 @@
 	var map = L.map('map').setView(mapCoords, 12);
 	L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
 		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_self">Humanitarian OpenStreetMap Team</a>'
 	}).addTo(map);
 
 
@@ -166,7 +166,7 @@
                 }
             }
         console.log(markerData)
-		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7705122,-122.4619007,12z/ target='_blank'><button class='btn-xsm btn-info'>Get Directions</button></class></a>").addTo(map);
+		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_self'><button class='btn-xsm btn-info'>Get Directions</button></class></a>").addTo(map);
 	}
 
 	var popup = L.popup();
