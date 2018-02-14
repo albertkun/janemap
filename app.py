@@ -39,24 +39,6 @@ def host():
                 theField = str(field.name)
                 setattr(event,theField,field.data)
                 print getattr(event,theField)
-
-
-
-            #(event,event[theField],field.data)
-            #event.theField=field.data
-            #setattr(event[field.name],field.name,field[data])
-            # these are available to you:
-            # field.name
-            # field.description
-            # field.label.text
-            # field.data
-        # print form.event_date.data
-        # event.host_name = form.host_name.data
-        # event.event_date = form.event_date.data
-        # event.event_name = form.event_name.data
-        # event.email = form.email.data
-        # event.phone = form.phone.data
-        # person.uid = time.time()
         app.logger.info(form.data)
         event.save()
         geocoder()
@@ -76,9 +58,6 @@ def uid(uid=None):
     events = Event.select().where(Event.uid == uid)
     return render_template('event.html', events=events)  
 
-
-
-
 @app.route("/events/", methods=['GET'])
 def get_events():
     all_events = Event.select()
@@ -93,8 +72,8 @@ def info():
 
 @app.teardown_request
 def _db_close(exc):
-    if not database.is_closed():
-        database.close()
+    if not db.is_closed():
+        db.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
