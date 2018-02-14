@@ -14,24 +14,24 @@
 	#map { position:absolute; top:0; bottom:0; width:100%; }
 
 
-.map-overlay {
-	z-index: 9999;
-    font: 10px/25px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    position: absolute;
-    width: 300px;
-    top: 0;
-    right: 0;
-    padding: 10px;
-    opacity: 0.9;
-}
+	.map-overlay {
+		z-index: 9999;
+	    font: 10px/25px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	    position: absolute;
+	    width: 300px;
+	    top: 0;
+	    right: 0;
+	    padding: 10px;
+	    opacity: 0.9;
+	}
 
-.map-overlay .map-overlay-inner {
-    background-color: #fff;
-    box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
-    border-radius: 3px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
+	.map-overlay .map-overlay-inner {
+	    background-color: #fff;
+	    box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
+	    border-radius: 3px;
+	    padding: 10px;
+	    margin-bottom: 10px;
+	}
 
 </style>
 
@@ -80,18 +80,40 @@
 	function addMarker(markerData){
 	// Add marker to map at click location; add popup window
 		console.log(markerData.lat,markerData.lon);
+		if (markerData.type == 'office'){
+			L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<b>"+markerData.name+"</b>").addTo(map);						
+		}
+		event_alias={
+			official: 'Official',
+			canvass:  'Canvassing',
+			phone: 'orange',
+			voter: 'red',
+			meeting: 'black',
+			fund: 'black',
+			rally: 'Rally',
+			other: 'Other'
+		}
 
 		colors = {
-			official: "#AF1E23",
+			official: '#AF1E23',
 			canvass:  'black',
-			phone: 'black',
-			voter: 'black',
+			phone: 'orange',
+			voter: 'red',
 			meeting: 'black',
 			fund: 'black',
 			rally: 'black',
 			other: 'green'
 		}
-
+		if (markerData.type=='official'){
+			markerOptions={
+			radius: 10,
+			fillColor: '#AF1E23',
+			color: "white",
+			opacity:1,
+			fillOpacity:.75
+			}
+		}
+		else{
 		markerOptions=
 				{
                     radius: 5,
@@ -101,8 +123,9 @@
                     opacity: 1,
                     fillOpacity: 0.9
                 }
-        console.log(markerOptions)
-		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<b>"+markerData.name+"</b>").addTo(map);
+            }
+        console.log(markerData)
+		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h3>"+markerData.name+"</h3><div class='btn btn-danger'>"+event_alias[markerData.type]+"</div><br>"+markerData.date).addTo(map);
 	}
 	var popup = L.popup();
 
@@ -110,6 +133,7 @@
 		markerData ={
 			lat: {{event.lat}},
 			lon: {{event.lon}},
+			date: "{{event.event_date}}",
 			name: "{{event.event_name}}",
 			type: "{{event.event_type}}"
 		}

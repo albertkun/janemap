@@ -8,8 +8,8 @@ from config import Config
 # db = PostgresqlDatabase('janemap', user='postgres', password='password',
                            # host='127.0.0.1', port=5432)
 
-db = PostgresqlDatabase('vfqqghrb', user='vfqqghrb', password='QgVP60gxsBDc_5KcV5KRowCydpfGADop',
-                          host='hanno.db.elephantsql.com', port=5432)
+db = PostgresqlDatabase(database=Config.DATABASE, user=Config.USERNAME, password=Config.SECRET_KEY,
+                          host=Config.HOST, port=Config.PORT)
 # Connect to our database.
 db.connect()
 
