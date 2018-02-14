@@ -61,12 +61,14 @@ def host():
         event.save()
         geocoder()
         return redirect(url_for('index'))
+        db.close()
     elif request.method =='GET':
         return render_template('host.html', form=form)
   
 @app.route('/')
 def index():
     geoevents = Event.select().where(Event.lat.is_null(False))
+    db.close()
     return render_template('index.html',events=geoevents)
 
 @app.route('/events/<uid>')
@@ -82,11 +84,17 @@ def get_events():
     all_events = Event.select()
     result = users_schema.dump(all_events)
     return jsonify(result.data)
+    db.close()
 
 
 @app.route('/info')
 def info():
   return render_template('info.html', events=events)  
+
+@app.teardown_request
+def _db_close(exc):
+    if not database.is_closed():
+        database.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
