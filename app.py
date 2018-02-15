@@ -4,12 +4,16 @@ from models import *
 from forms import EventHostingForm
 from geocode import geocoder
 from flask_marshmallow import Marshmallow
+import operator
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SECRET_KEY'] = 'secret'
 ma = Marshmallow(app)
 
+
+event_types = ['Campaign Office','Official','Canvassing','Phonebanking','Voter Registration','Meeting',
+				'Fundraising','Rally','Other']
 
 class EventSchema(ma.Schema):
     class Meta:
@@ -51,7 +55,7 @@ def host():
 def index():
     geoevents = Event.select().where(Event.lat.is_null(False))
     db.close()
-    return render_template('index.html',events=geoevents)
+    return render_template('index.html',events=geoevents,event_types=event_types)
 
 @app.route('/events/<uid>')
 def uid(uid=None):

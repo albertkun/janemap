@@ -24,52 +24,116 @@
 	var colors;
 	colors = {
 			official: '#AF1E23',
-			canvass:  'orange',
-			phone: 'purple',
-			voter: 'red',
-			meeting: 'blue',
-			fund: 'orange',
-			rally: '#AF1E23',
-			other: 'green'
+			jane: '#AF1E23',
+			canvass:  '#0B4574',
+			phone: '#0B4574',
+			voter: '#0B4574',
+			meeting: '#0B4574',
+			fund: '#0B4574',
+			rally: '#0B4574',
+			other: '#0B4574'
 		}	
 
 
 
 </script>
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT Sans">
 <style>
-	body { margin:0; padding-top:75px; }
-	#map {top:75px; position: absolute;bottom:0; width:100%; }
 
-	.map-overlay {
-		z-index: 9999;
-	    font: 10px/25px;
-	    position: absolute;
-	    width: 300px;
-	    top: 75px;
-	    right: 0;
-	    padding: 10px;
-	    opacity: 0.9;
-	}
+	body { 
+		margin:0; 
+		padding-top:75px;
+		font-family: 'PT Sans', arial;
+		font-style: normal;
 
-	.map-overlay .map-overlay-inner {
-	    background-color: #fff;
-	    box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
-	    border-radius: 3px;
-	    padding: 10px;
-	    margin-bottom: 10px;
-	}
+		}
 	#header{
 		margin-top:-75px;
-		margin-left: 25px; 
+		margin-left: 5px; 
 	}
-
+	.jk-logo{
+		max-height: 75px;
+		float: left;
+		padding-right: 10px
+	}
 	#host-button{
-		margin-top:-50px;
+		margin-top:-60px;
 		margin-right: 50px;
 		right: 25px;
 		float:right;
+		border-radius: .5px;
 	}	
+
+	.btn-danger:hover {
+		color: #fff;
+	    background-color: #AC162C;
+	    border-color: #AC162C;
+	}
+
+
+	#map {
+		top:75px;
+		position: absolute;
+		bottom: 0; 
+		width: 100%; 
+		height: 400px
+	}
+
+	.map-overlay {
+		z-index: 9999;
+		font: 10px/25px;
+		position: absolute;
+		width: 325px;
+		top: 75px;
+		right: 0;
+		/*opacity: 0.9;*/
+		height: 410px;
+		overflow-y: auto;	    
+	}
+
+	.map-overlay .map-overlay-inner {
+		background-color: #fff;
+		box-shadow:0 1px 2px rgba(0, 0, 0, 0.10);
+		border-radius: 3px;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+
+	.filtermenu{
+		position: -webkit-sticky;
+		position: sticky;
+		top: 0px
+		z-index:9999;
+	}
+
+	.subHeader{
+		font-size:14px;
+		text-transform: uppercase;
+	}
+
+	label.subHeader{
+		font-size:12px;
+		text-transform: uppercase;
+		color: gray;
+	}
+
+	form{
+		padding-bottom: 5px
+	}
+	.sortby{
+		padding: 0.175rem .175rem;
+	}
+	.zipcode{
+		width: 120px;
+	}
+	.distance{
+		width:70px;
+		padding: 0.175rem .175rem;
+	}
+
+
+
+
 	.category{
 		display:inline-block;
 		border-radius: 1px;
@@ -88,19 +152,86 @@
 		opacity: .5;
 		color:white;
 	}
+
+	.col > label{
+		line-height: 0.5 rem !important;
+		margin-bottom: 0px;
+		cursor: pointer;
+	}
+
 </style>
 <div id="header">
+	<img class="jk-logo" src="../static/img/JK_LOGO_120.png">
 	<p class="lead"><b style="font-size: 24px">Jane Map</b> 
 	<br>Let's get started on electing a progressive mayor for San Francisco. <a href="/host">
 	<br>
 </div>
-	<a href="/host"><button type="button" id="host-button" class="btn btn-primary">Host an Event</button></a></p></div>
+	<a href="/host"><button type="button" id="host-button" class="btn btn-danger">Host an Event</button></a></p></div>
 <hr>
 
 <div id="map"></div>
-
 <div class='map-overlay top'>
 	<div class='map-overlay-inner'>
+		<form class="filtermenu">
+			<span class="subHeader">Filters</span>
+			<div class="form-row">
+				<div class="col">
+					<label class="subHeader">By Zipcode</label>
+					<input class="form-control zipcode" type="text" aria-describedby="emailHelp" placeholder="   ZIPCODE">
+				</div>
+			    <div class="col">
+					<label class="subHeader">Distance</label>			    
+				      <select class="form-control distance">
+				      	<option value="" >10mi</option>
+				      	<option value="" selected>5mi</option>
+				      	<option value="">2mi</option>
+				      	<option value="">1mi</option>
+				      </select>
+			    </div>
+			    <div class="col">
+					<label class="subHeader">Sort by</label>				    	
+			 	     <select class="form-control sortby">
+				      	<option value="" selected>Time</option>
+				      	<option value="" >Distance</option>
+				      </select>
+			    </div>				
+			</div>
+
+			<span class="subHeader">Search by event</span>
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:13px;vertical-align: middle" src="../static/img/red_marker.png"><span>Official</span></label>
+				</div>
+			</div>			
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Canvassing</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Fundraising</span></label>
+				</div>
+			</div>	
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Voter Registration</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Rally</span></label>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Meeting</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Other</span></label>
+				</div>
+			</div>
+			<div style="font-size: 12px;text-align: center"><a href="#">Show All</a> • <a href="#">Hide All</a></div>					
+		</form>
 
 		{% for event in events %}
 			<div class="card">
@@ -112,40 +243,38 @@
 				<div class="card-body">
 					<p class="card-text">Hosted by: {{event.host_name}}<br>
 					Event Date: {{event.event_date}}<br>Event Time: {{event.event_time}}</p>
-					<b>{{event.full_address()}}</b>
-					<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7591006,-122.5050889,12z/ target="_blank"><button class='btn-xsm btn-info'>Get Directions</button></class></a>
+					<b>{{event.address}}</b><br>
+					<span class="addressLine2">{{event.city}}, {{event.state}}<br>
+					<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7591006,-122.5050889,12z/ target="_blank"><br><button class='btn-xsm btn-danger'>Get Directions</button></class></a>
 				</div>
 			</div>
 			<br>
 		{% endfor %}
-
-
-
 	</div>
 </div>
 
-
-
-
-
+<!-- begin the map script -->
 <script>
 
 	var mapCoords = [37.770715, -122.392421]
-	var map = L.map('map').setView(mapCoords, 12);
+	var map = L.map('map',{attributionControl:false}).setView(mapCoords, 12);
 	L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
 		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
 	}).addTo(map);
-
+	L.control.attribution({position: 'bottomleft'}).addTo(map);
 
 	function addMarker(markerData){
 	// Add marker to map at click location; add popup window
-		console.log(markerData.lat,markerData.lon);
+		// console.log(markerData.lat,markerData.lon);
+
+		// logic for the campaign offices
 		if (markerData.type == 'office'){
-			L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<b>"+markerData.name+"</b>").addTo(map);						
+			L.marker([markerData.lat,markerData.lon], {icon: officeIcon}).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><b>Address:</b><br>"+markerData.address+"<br>"+markerData.city+", "+markerData.state+"<br><b>Office Hours:</b><br>"+markerData.hours+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map);
 		}
 
-		if (markerData.type=='official'){
+		// styling the official events red
+		else if (markerData.type=='official'){
 			markerOptions={
 			radius: 10,
 			fillColor: '#AF1E23',
@@ -153,24 +282,49 @@
 			opacity:.7,
 			fillOpacity:.70
 			}
-		}
+		}s
+
+		//styling everything else as blue
 		else{
 		markerOptions=
 				{
-                    radius: 5,
-                    fillColor: colors[markerData.type],
-                    color: "white",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.9
-                }
-            }
-        console.log(markerData)
-		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-info'>Get Directions</button></class></a>").addTo(map);
+					radius: 5,
+					fillColor: colors[markerData.type],
+					color: "white",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.9
+				}
+			}
+
+		// console.log(markerData)
+		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map);
 	}
 
 	var popup = L.popup();
 
+
+	/////// here comes the data //////
+	// first campaign office <=== should really be in a data table..
+	var campaign_office = {
+		lat: 37.7554447,
+		lon: -122.4187761,
+		type: 'office',
+		name: 'Mission Street Campaign Office',
+		address: '22nd Street and Mission St.',
+		city:'San Francisco',
+		state: 'CA',
+		hours: 'M-F: 10am to 5pm'
+	}
+	var officeIcon = L.icon({
+	    iconUrl: '../static/img/star.png',
+	    iconSize:     [18, 18], // size of the icon
+	    iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+	    shadowAnchor: [12, 12],  // the same for the shadow
+	    popupAnchor:  [0,-10] // point from which the popup should open relative to the iconAnchor
+	});
+	
+	// data from database
 	{% for event in events %}
 		markerData ={
 			lat: {{event.lat}},
@@ -182,6 +336,7 @@
 		}
 		addMarker(markerData);
 	{% endfor %}
+	addMarker(campaign_office)
 </script>
 
 {% endblock %}
