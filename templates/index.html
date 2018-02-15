@@ -200,7 +200,7 @@
 			<span class="subHeader">Search by event</span>
 			<div class="form-row">
 				<div class="col">
-					<label><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>
+					<label for='office_group'><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>
 				</div>
 				<div class="col">
 					<label><img style="max-width:13px;vertical-align: middle" src="../static/img/red_marker.png"><span>Official</span></label>
@@ -270,7 +270,10 @@
 
 		// logic for the campaign offices
 		if (markerData.type == 'office'){
-			L.marker([markerData.lat,markerData.lon], {icon: officeIcon}).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><b>Address:</b><br>"+markerData.address+"<br>"+markerData.city+", "+markerData.state+"<br><b>Office Hours:</b><br>"+markerData.hours+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map);
+			office_group = L.marker([markerData.lat,markerData.lon], {icon: officeIcon}).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><b>Address:</b><br>"+markerData.address+"<br>"+markerData.city+", "+markerData.state+"<br><b>Office Hours:</b><br>"+markerData.hours+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map)
+			
+			map.addLayer(office_group);
+
 		}
 
 		// styling the official events red
@@ -282,7 +285,7 @@
 			opacity:.7,
 			fillOpacity:.70
 			}
-		}s
+		}
 
 		//styling everything else as blue
 		else{
@@ -296,13 +299,25 @@
 					fillOpacity: 0.9
 				}
 			}
-
 		// console.log(markerData)
-		L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map);
+		markerData.type = L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+markerData.date+"<br><b>Event Start Time:<b>"+markerData.time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
+		map.addLayer(markerData.type)
 	}
 
 	var popup = L.popup();
 
+	// toggle variable to use in togglePoints();
+	window.toggle = false;
+
+	function togglePoints(group) {
+		if(!toggle) {
+		map.removeLayer(group);
+	} 
+		else {
+		map.addLayer(group);
+	}
+		toggle = !toggle;
+	}
 
 	/////// here comes the data //////
 	// first campaign office <=== should really be in a data table..
@@ -337,6 +352,20 @@
 		addMarker(markerData);
 	{% endfor %}
 	addMarker(campaign_office)
+	$('label').click(function() {
+	       labelID = $(this).attr('for');
+	       if (labelID == 'office_group'){
+	       	if (map.hasLayer(office_group)){
+	       		map.removeLayer(office_group)
+	       		$('.office_group').html('<label for="office_group"><img style="max-width:13px;vertical-align: middle" src="../static/img/star-gray.png"><span>Campaign Office</span></label>')
+	       	}
+	       	else{
+	       		map.addLayer(office_group)
+	       		$('.office_group').html('<label for="office_group"><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>')	       		
+	       	}
+	       
+	       console.log(labelID)}
+	});	
 </script>
 
 {% endblock %}
