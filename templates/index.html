@@ -34,7 +34,8 @@
 			other: '#0B4574'
 		}	
 
-
+	var items = [];
+	var zipcodes={};
 
 </script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT Sans">
@@ -45,8 +46,9 @@
 		padding-top:75px;
 		font-family: 'PT Sans', arial;
 		font-style: normal;
-
+		overflow-y: hidden;
 		}
+
 	#header{
 		margin-top:-75px;
 		margin-left: 5px; 
@@ -76,7 +78,6 @@
 		position: absolute;
 		bottom: 0; 
 		width: 100%; 
-		height: 400px
 	}
 
 	.map-overlay {
@@ -87,7 +88,7 @@
 		top: 75px;
 		right: 0;
 		/*opacity: 0.9;*/
-		height: 410px;
+		/*height: 410px;*/
 		overflow-y: auto;	    
 	}
 
@@ -161,7 +162,7 @@
 
 </style>
 <div id="header">
-	<img class="jk-logo" src="../static/img/JK_LOGO_120.png">
+	<a href="https://janekim.org/" target="_blank"><img class="jk-logo" src="../static/img/JK_LOGO_120.png"></a>
 	<p class="lead"><b style="font-size: 24px">Jane Map</b> 
 	<br>Let's get started on electing a progressive mayor for San Francisco. <a href="/host">
 	<br>
@@ -177,7 +178,7 @@
 			<div class="form-row">
 				<div class="col">
 					<label class="subHeader">By Zipcode</label>
-					<input class="form-control zipcode" type="text" aria-describedby="emailHelp" placeholder="   ZIPCODE">
+					<input id="zipcodeform" class="form-control zipcode" type="text" maxlength="5" placeholder="   ZIPCODE">
 				</div>
 			    <div class="col">
 					<label class="subHeader">Distance</label>			    
@@ -366,6 +367,50 @@
 	       
 	       console.log(labelID)}
 	});	
+
+$('#map').css('width',$(window).width()-320)
+$('.map-overlay').css('height',$(window).height()-55) //for side panel height
+
+
+function zipcodeSearch(){
+	$( "#zipcodeform" ).keyup(function() {
+		var zipForm = $( "#zipcodeform" ).val();
+		// console.log(items)
+		searchZip(zipForm)
+
+});
+}
+
+function searchZip(zipForm) { 
+
+	console.log(items.find(zipForm)); 
+}
+
+// this is the function to reset the search
+// Some simple jQuery to remove the default search value when the user clicks the box
+  $(document).ready(function() {
+
+  // 		$.getJSON( "../static/js/ca_postal_codes.json", function( data ) {
+		// 		$.each( data, function( key, val ) {
+		// 			items.push(val);
+		// 	});
+		// console.log(items)	
+  // 		})
+  // 		zipcodeSearch()
+		// var newObj = Object.assign({}, items)
+		// console.log(newObj)				  			
+  });
+
+
+// disables pressing enter which resets the search...
+function stopRKey(evt) {
+  var evt = (evt) ? evt : ((event) ? event : null);
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;}
+	}
+
+document.onkeypress = stopRKey;
+
 </script>
 
 {% endblock %}

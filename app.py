@@ -47,7 +47,6 @@ def host():
         event.save()
         geocoder()
         return redirect(url_for('index'))
-        db.close()
     elif request.method =='GET':
         return render_template('host.html', form=form)
   
@@ -68,7 +67,6 @@ def get_events():
     result = users_schema.dump(all_events)
     return jsonify(result.data)
     db.close()
-
 
 @app.route('/info')
 def info():
