@@ -4,7 +4,9 @@ from models import *
 from forms import EventHostingForm
 from geocode import geocoder
 from flask_marshmallow import Marshmallow
+from datetime import datetime
 import operator
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -49,17 +51,18 @@ def host():
         return redirect(url_for('index'))
     elif request.method =='GET':
         return render_template('host.html', form=form)
-  
+
 @app.route('/')
 def index():
-    geoevents = Event.select().where(Event.lat.is_null(False))
-    db.close()
-    return render_template('index.html',events=geoevents,event_types=event_types)
+	currentDay = datetime.now()
+	geoevents = Event.select().where(Event.lat.is_null(False) and Event.event_date > currentDay)
+	db.close()
+	return render_template('index.html',events=geoevents,event_types=event_types)
 
 @app.route('/events/<uid>')
 def uid(uid=None):
     events = Event.select().where(Event.uid == uid)
-    return render_template('event.html', events=events)  
+    return render_template('event.html', events=events)
 
 @app.route("/events/", methods=['GET'])
 def get_events():
@@ -70,7 +73,7 @@ def get_events():
 
 @app.route('/info')
 def info():
-  return render_template('info.html', events=events)  
+  return render_template('info.html', events=events)
 
 @app.teardown_request
 def _db_close(exc):
