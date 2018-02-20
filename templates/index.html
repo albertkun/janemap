@@ -8,6 +8,364 @@
 
 <link rel="stylesheet" href="../static/css/leaflet.css"/>
 <script src="../static/js/leaflet.js"></script>
+<script src="../static/js/moment.js"></script>
+<script type="text/javascript">
+	var event_alias;
+	event_alias={
+			official: 'Official',
+			canvassing:  'Canvassing',
+			phone_banking: 'Phone Banking',
+			voter_reg: 'Voter Registration',
+			meeting: 'Meeting',
+			fundraiser: 'Fundraiser',
+			house_party: 'House Party',
+			rally: 'Rally',
+			other: 'Other'
+		};
+
+	var colors;
+	colors = {
+			official: '#AF1E23',
+			jane: '#AF1E23',
+			canvassing:  '#0B4574',
+			house_party:  '#0B4574',
+			phone_banking: '#0B4574',
+			voter_reg: '#0B4574',
+			meeting: '#0B4574',
+			fundraiser: '#0B4574',
+			rally: '#0B4574',
+			other: '#0B4574'
+		}
+
+	var items = [];
+	var zipcodes={};
+
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT Sans">
+<link rel="stylesheet" href="../static/css/styles.css">
+<div id="header">
+	<a href="https://janekim.org/" target="_blank"><img class="jk-logo" src="../static/img/JK_LOGO_120.png"></a>
+	<p class="lead"><b style="font-size: 24px">Jane Map</b>
+	<br>Let's get started on electing a progressive mayor for San Francisco. <a href="/host">
+	<br>
+</div>
+	<a href="/host"><button type="button" id="host-button" class="btn btn-danger">Host an Event</button></a></p></div>
+<hr>
+
+<div id="map"></div>
+<div class='map-overlay top'>
+	<div class='map-overlay-inner'>
+		<form class="filtermenu">
+			<span class="subHeader">Filters</span>
+			<div class="form-row">
+				<div class="col">
+					<label class="subHeader">By Zipcode</label>
+					<input id="zipcodeform" class="form-control zipcode" type="text" maxlength="5" placeholder="   ZIPCODE">
+				</div>
+			    <div class="col">
+					<label class="subHeader">Distance</label>
+				      <select class="form-control distance">
+						  <option value="">1mi</option>
+						  <option value="">2mi</option>
+				      	<option value="" selected>5mi</option>
+						<option value="" >10mi</option>
+				      </select>
+			    </div>
+			    <div class="col">
+					<label class="subHeader">Sort by</label>
+			 	     <select class="form-control sortby">
+				      	<option value="" selected>Time</option>
+				      	<option value="" >Distance</option>
+				      </select>
+			    </div>
+			</div>
+
+			<span class="subHeader">Search by event</span>
+			<div class="form-row">
+					<div class="col">
+					<label for='office_group'><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span> Campaign Office</span></label></div>
+					{% set cnt = [0] %}
+					{% for eventTypes in eventTypeGroups %}
+					    {% if cnt.append(cnt.pop() + 1) %}{% endif %}
+						<!-- add form-row and col divs if the row is even! -->
+						{% if cnt[0]%2 == 0 %}
+						<div class="form-row">
+						<div class="col">
+						{% endif %}
+							<div class="col">
+							<label for='{{eventTypes.event_type}}'><img {% if eventTypes.event_type == 'official' %} src="../static/img/red_marker.png" style="max-width:15px;vertical-align: middle" {% else %} src="../static/img/blue_marker.png" style="max-width:10px;vertical-align: middle" {% endif %}><span style="text-transform:capitalize;"> {{eventTypes.event_type}}</span></label>
+						<!-- end the div for form-row if the counter isn't even -->
+						{% if cnt[0]%2 != 0 %}
+						</div>
+						{% else %}
+						<!-- end the div for column -->
+						</div>
+						</div>
+						{% endif %}
+						<!-- end the rest of the rom -->
+						</div>
+					{% endfor %}
+				<!--  ineffcient method for populating the filters-->
+				<!-- <div class="col">
+					<label for='office_group'><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:13px;vertical-align: middle" src="../static/img/red_marker.png"><span>Official</span></label>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Canvassing</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Fundraising</span>
+					</label>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Voter Registration</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Rally</span></label>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Meeting</span></label>
+				</div>
+				<div class="col">
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Other</span></label>
+				</div>
+			</div> -->
+
+			<!-- <div style="font-size: 12px;text-align: center"><a href="#">Show All</a> • <a href="#">Hide All</a></div> -->
+		</form>
+
+		{% for event in events %}
+			{% if event.lat is not none %}
+				<div class="card">
+					<div class="card-header">
+						{% if event.url is not none %}
+							<h5 class="card-title" style="color:#AF1E23;"><a href="{{event.url}}" target="_blank"><span id='eventName_on_card'>{{event.event_name}}</h5></span></a>
+						{% else %}
+							<h5 class="card-title" style="color:#AF1E23;">{{event.event_name}}</h5></a>
+						{% endif %}
+						<div class='btn-xsm btn-outline dark category'>{{event.event_type}}
+						</div>
+					</div>
+					<div class="card-body">
+						<p class="card-text"><b>Hosted by:</b> {{event.host_name}}<br>
+						<b>Event Date:</b> {{event.event_date.strftime('%A, %B %#d').lstrip('0')}}<br><b>From {{event.start_time}} to {{event.end_time}}</b></p>
+						<b>{{event.address}}</b><br>
+						<span class="addressLine2">{{event.city}}, {{event.state}}<br>
+						<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7591006,-122.5050889,12z/ target="_blank"><br><button class='btn-xsm btn-danger'>Get Directions</button></class></a>
+					</div>
+				</div>
+			<br>
+			{%endif%}
+		{% endfor %}
+	</div>
+</div>
+
+<!-- begin the map script -->
+<script>
+
+	var mapCoords = [37.770715, -122.392421]
+	var map = L.map('map',{attributionControl:false}).setView(mapCoords, 12);
+	L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+	}).addTo(map);
+	L.control.attribution({position: 'bottomleft'}).addTo(map);
+
+	function addOffices(markerData){
+		if (markerData.type == 'office'){
+			office_group = L.marker([markerData.lat,markerData.lon], {icon: officeIcon}).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><b>Address:</b><br>"+markerData.address+"<br>"+markerData.city+", "+markerData.state+"<br><b>Office Hours:</b><br>"+markerData.hours+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map)
+
+			map.addLayer(office_group);
+		}
+	}
+
+	function addMarker(markerData){
+	// Add marker to map at click location; add popup window
+		// console.log(markerData.lat,markerData.lon);
+		// logic for the campaign offices
+		if (markerData.lat == null){
+			return;
+		}
+		// styling the official events red
+ 		else if (markerData.type=='official'){
+			markerOptions={
+			radius: 10,
+			fillColor: '#AF1E23',
+			color: "black",
+			opacity:.7,
+			fillOpacity:.70
+			}
+		}
+
+		//styling everything else as blue
+		else{
+		markerOptions=
+				{
+					radius: 5,
+					fillColor: colors[markerData.type],
+					color: "white",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.9
+				}
+			}
+		// console.log(markerData)
+		var dirtyDate = markerData.date
+		// var cleanedDate = dirtyDate.toDateString()
+		var cleanedDate = moment(dirtyDate).format("dddd, MMMM Do");
+		if (markerData.url == 'None'){
+			markerData.type = L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6>"+markerData.name+"</h6><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date: "+cleanedDate+"</b><br><b>From:<b>"+markerData.start_time+" to "+markerData.end_time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
+			map.addLayer(markerData.type)
+		}
+		else{
+			markerData.type = L.circleMarker([markerData.lat,markerData.lon],markerOptions).bindPopup("<h6><a href="+(markerData.url)+" target='_blank'>"+markerData.name+"</h6></a><div class='box' ><div class='popup-category' style='background-color:"+colors[markerData.type]+"'>"+event_alias[markerData.type]+"</div></div><br><b>Event Date:</b>"+cleanedDate+"<br><b>From:<b>"+markerData.start_time+" to "+markerData.end_time+"<br><a href=https://www.google.com/maps/dir//"+markerData.lat+","+markerData.lon+"/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
+		}
+		map.addLayer(markerData.type)
+	}
+
+	var popup = L.popup();
+
+	// toggle variable to use in togglePoints();
+	window.toggle = false;
+
+	function togglePoints(group) {
+		if(!toggle) {
+		map.removeLayer(group);
+	}
+		else {
+		map.addLayer(group);
+	}
+		toggle = !toggle;
+	}
+
+	/////// here comes the data //////
+	// first campaign office <=== should really be in a data table..
+	var campaign_office = {
+		lat: 37.7554447,
+		lon: -122.4187761,
+		type: 'office',
+		name: 'Mission Street Campaign Office',
+		address: '2640 Mission St.',
+		city:'San Francisco',
+		state: 'CA',
+		hours: 'M-F: 10am to 5pm'
+	}
+	var officeIcon = L.icon({
+	    iconUrl: '../static/img/star.png',
+	    iconSize:     [15, 15], // size of the icon
+	    iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+	    shadowAnchor: [12, 12],  // the same for the shadow
+	    popupAnchor:  [0,-10] // point from which the popup should open relative to the iconAnchor
+	});
+
+	// data from database
+	{% for theEvent in events %}
+		{% if theEvent.lat is not none %}
+		markerData ={
+			lat: {{theEvent.lat}},
+			lon: {{theEvent.lon}},
+			date: "{{theEvent.event_date}}",
+			start_time: "{{theEvent.start_time}}",
+			end_time: "{{theEvent.end_time}}",
+			name: "{{theEvent.event_name}}",
+			type: "{{theEvent.event_type}}",
+			url: "{{theEvent.url}}"
+		}
+			addMarker(markerData);
+			console.log(markerData.lat)
+		{% endif %}
+	{% endfor %}
+	addOffices(campaign_office)
+
+	$('label').click(function() {
+	       labelID = $(this).attr('for');
+		   console.log(labelID)
+	       if (labelID == 'office_group'){
+	       	if (map.hasLayer(office_group)){
+	       		map.removeLayer(office_group)
+	       		$('.office_group').html('<label for="office_group"><img style="max-width:13px;vertical-align: middle" src="../static/img/star-gray.png"><span>Campaign Office</span></label>')
+	       	}
+	       	else{
+	       		map.addLayer(office_group)
+	       		$('.office_group').html('<label for="office_group"><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>')
+	       	}
+
+	       }
+	});
+
+$('#map').css('width',$(window).width()-320)
+$('.map-overlay').css('height',$(window).height()-55) //for side panel height
+
+
+function zipcodeSearch(items){
+	$( "#zipcodeform" ).keyup(function() {
+		var zipForm = $( "#zipcodeform" ).val();
+		// console.log(zipForm)
+		for(var i = 0; i < items.length; i++)
+		{
+		  if(items[i].zip == zipForm)
+		  {
+			  latlng=[items[i].lat,items[i].lon]
+		    map.panTo(latlng);
+		  }
+		}
+
+		// searchZip(zipForm)
+	});
+}
+
+function searchZip(zipForm) {
+
+	console.log(items.find(zipForm));
+}
+
+// this is the function to reset the search
+// Some simple jQuery to remove the default search value when the user clicks the box
+  $(document).ready(function() {
+
+  		$.getJSON( "../static/js/ca_postal_codes.json", function( data ) {
+				$.each( data, function( key, val ) {
+					items.push(val);
+			});
+		console.log(items)
+  		})
+  		zipcodeSearch(items)
+		var newObj = Object.assign({}, items)
+		console.log(newObj)
+  });
+
+
+// disables pressing enter which resets the search...
+function stopRKey(evt) {
+  var evt = (evt) ? evt : ((event) ? event : null);
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;}
+	}
+
+document.onkeypress = stopRKey;
+
+</script>
+
+{% endblock %}
+=======
+{% extends "base.html" %}
+{% block content %}
+
+
+<title>Jane Map</title>
+
+<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+<link rel="stylesheet" href="../static/css/leaflet.css"/>
+<script src="../static/js/leaflet.js"></script>
 
 <style>
 	body { margin:0; padding:0; }
