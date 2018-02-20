@@ -20,9 +20,8 @@ event_types = ['Campaign Office','Official','Canvassing','Phonebanking','Voter R
 class EventSchema(ma.Schema):
     class Meta:
         # Fields to expose
-        fields = ('host_name', 'email', 'event_type','event_date','lat','lon')
+        fields = ('host_name', 'email', 'event_type','event_date','url','lat','lon')
 
-user_schema = EventSchema()
 users_schema = EventSchema(many=True)
 
 
@@ -52,12 +51,22 @@ def host():
     elif request.method =='GET':
         return render_template('host.html', form=form)
 
+
+
+
 @app.route('/')
 def index():
 	currentDay = datetime.now()
-	geoevents = Event.select().where(Event.lat.is_null(False) and Event.event_date > currentDay)
+	eventTypeGroups = (Event.select(Event.event_type)
+		.where(Event.event_date > currentDay)
+		.group_by(Event.event_type)
+		.having(fn.COUNT(Event.id) != 0))
+	geoevents = (Event
+		.select()
+		.where(Event.lat.is_null(False) and Event.event_date > currentDay)
+		.order_by(Event.event_date.asc()))
 	db.close()
-	return render_template('index.html',events=geoevents,event_types=event_types)
+	return render_template('index.html',events=geoevents,event_types=event_types,eventTypeGroups=eventTypeGroups)
 
 @app.route('/events/<uid>')
 def uid(uid=None):

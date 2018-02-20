@@ -41,7 +41,7 @@
 	  <label for="host_email" class="control-label">Host Email</label>
 	  <input type="text" class="form-control" id="host_email" pattern="[A-Za-z0-9]+@[A-Za-z0-9]+.[A-Za-z0-9]+{1,}$" placeholder="Email" required>
 		<label for="host_phone" class="control-label">Host Phone</label>
-	  <input type="text" class="form-control" id="host_phone" pattern="[0-9]+{,11}" placeholder="Phone" required>    
+	  <input type="text" class="form-control" id="host_phone" pattern="[0-9]+{,11}" placeholder="Phone" required>
 	</div>
 	</form>
 	-->
@@ -73,7 +73,7 @@
 			Please choose a phone.
 		  </div>
 		</div>
-	  </div>    
+	  </div>
 	</div>
 
 
@@ -97,11 +97,21 @@
 	  </div>
 
 	  <div class="col-sm-2 mb-4 mt-2">
-		<label for="event_time">Start Time</label>
+		<label for="start_time">Start Time</label>
 		<div class="input-group">
-		  <input type="time" class="form-control" name="event_time" id="event_time" aria-describedby="inputGroupPrepend" required>
+		  <input type="time" class="form-control" name="start_time" id="start_time" aria-describedby="inputGroupPrepend" required>
 		  <div class="invalid-feedback">
-			Please choose a time.
+			Please choose a start time.
+		  </div>
+		</div>
+	  </div>
+
+	  <div class="col-sm-2 mb-4 mt-2">
+		<label for="end_time">End Time</label>
+		<div class="input-group">
+		  <input type="time" class="form-control" name="end_time" id="end_time" aria-describedby="inputGroupPrepend" required>
+		  <div class="invalid-feedback">
+			Please choose a end time.
 		  </div>
 		</div>
 	  </div>
@@ -110,7 +120,7 @@
 		<label for="event_type">Event Type</label>
 		{{ form.event_type }}
 		 <!-- add drop down -->
-	  
+
 	<!--         <select id="event_type" name="event_type" class="form-control">
 			<option value="canvass">Canvassing</option>
 			<option value="phone">Phone Bank</option>
@@ -120,7 +130,7 @@
 			<option value ="rally">Rally</option>
 			<option value ="other">Other</option>
 		  </select> -->
-	  </div>     
+	  </div>
 	  <div class="col-sm-12 mb-4 mt-2">
 		<label for="event_description">Event Description</label>
 		<div class="input-group">
@@ -128,7 +138,7 @@
 		  <div class="invalid-feedback">
 			Please describe the event.
 		  </div>
-		</div>   
+		</div>
 
 
 	<div class="form-row">
@@ -160,7 +170,7 @@
 		<div class="invalid-feedback">
 		  Please provide a valid zip.
 		</div>
-	  </div>    
+	  </div>
 	  <div class="col-sm-12 mb-4">
 		<label for="url">Event Website</label>
 		<div class="input-group">
@@ -168,7 +178,7 @@
 		  <div class="invalid-feedback">
 			Is there a link to the event?
 		  </div>
-		</div>       
+		</div>
 	</div>
 
 	</div>
@@ -201,18 +211,18 @@
 })();
 </script>
 
- 
+
   <br>
 		{% with messages = get_flashed_messages(with_categories=true) %}
 			{% if messages %}
- 
+
 		{% for message in messages %}
 			{% if "Error" not in message[1]: %}
 				<div class="alert alert-info">
 				<strong>Success! </strong> {{ message[1] }}
 				</div>
 			{% endif %}
- 
+
 			{% if "Error" in message[1]: %}
 				<div class="alert alert-warning">
 				{{ message[1] }}
@@ -221,6 +231,6 @@
 		{% endfor %}
 			{% endif %}
 		{% endwith %}
- 
+
 </div>
 {% endblock %}

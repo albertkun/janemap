@@ -5,6 +5,7 @@ from flask import session
 from config import Config
 # Connect to the PostgresqlDatabase
 
+# for local connecting purposes
 # db = PostgresqlDatabase('janemap', user='postgres', password='password',
                            # host='127.0.0.1', port=5432)
 
@@ -42,7 +43,8 @@ class Event(Model):
 	phone = CharField()
 	event_name = CharField()
 	event_date = DateTimeField()
-	event_time = CharField()
+	start_time = CharField()
+	end_time = CharField()
 	event_type = CharField()
 	event_description = CharField(null = True)
 	neighborhood = CharField(null = True)
