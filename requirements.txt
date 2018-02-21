@@ -3,11 +3,7 @@ peewee
 psycopg2
 flask-wtf
 requests
-<<<<<<< HEAD
 flask-marshmallow
 gunicorn
 simplejson
 pytz
-=======
-flask-marshmallow
->>>>>>> parent of 4258ae9... Merge pull request #1 from albertkun/searchbox
