@@ -4,3 +4,6 @@ psycopg2
 flask-wtf
 requests
 flask-marshmallow
+gunicorn
+simplejson
+pytz
