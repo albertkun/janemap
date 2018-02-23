@@ -274,11 +274,10 @@
 
 
 		if (markerData.url == 'None') {
-			markerData.type = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6>" + markerData.name + "</h6><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date: " + cleanedDate + "</b><br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
-			map.addLayer(markerData.type)
+			anything = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6>" + markerData.name + "</h6><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date: " + cleanedDate + "</b><br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(layer2add[markerData.type]);
 		}
 		else {
-			markerData.type = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6><a href=" + (markerData.url) + " target='_blank'>" + markerData.name + "</h6></a><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date:</b>" + cleanedDate + "<br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
+			anything = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6><a href=" + (markerData.url) + " target='_blank'>" + markerData.name + "</h6></a><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date:</b>" + cleanedDate + "<br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(layer2add[markerData.type]);
 		}
 		map.addLayer(markerData.type)
 	}
