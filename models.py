@@ -38,6 +38,7 @@ class Event(Model):
 	# These are all the fields it has
 	# match up CharField/IntegerField/etc with correct type
 	#uid = CharField(primary_key=True) # primary key = unique id
+	id = IntegerField(primary_key=True)
 	host_name = CharField()
 	email = CharField()
 	phone = CharField()
@@ -66,3 +67,4 @@ class Event(Model):
 		database = db
 		# and it's in the table called 'events'
 		db_table = 'events'
+		primary_key = False

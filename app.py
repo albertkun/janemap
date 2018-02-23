@@ -60,7 +60,7 @@ def index():
 	eventTypeGroups = (Event.select(Event.event_type)
 		.where(Event.event_date >= currentDay)
 		.group_by(Event.event_type)
-		.having(fn.COUNT(Event.id) != 0))
+		.having(fn.COUNT(Event.lat) > 0))
 	geoevents = (Event
 		.select()
 		.where(Event.lat.is_null(False) and Event.event_date >= currentDay)

@@ -3,15 +3,15 @@ import requests
 from time import sleep
 def geocoder():
     for event in Event.select().where(Event.lat.is_null()):
-        print (event)
-        if event.geocode_attempt == False:
+        print event
+        if event.geocode_attempt != True:
             try:
                 sleep(3)
                 # Form the URL with the address in it
                 #print str(event.full_address())
                 url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address={}".format(event.full_address())
 
-                print (url)
+                print url
                 # Request the URL
 
                 response = requests.get(url)
@@ -24,9 +24,8 @@ def geocoder():
                 event.lon = coords['lng']
                 # And now save it to the database
                 #print "{} is at {}, {}".format(event.event_name, event.lat, event.lon)
-
                 event.save()
             except:
-              #print "Failed to query/save for {}".format(event.event_name)
-              event.geocode_attempt = True
-              event.save()
+              print "Failed to query/save for {}".format(event.event_name)
+            event.geocode_attempt = True
+            event.save()

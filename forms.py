@@ -15,6 +15,7 @@ class EventHostingForm(FlaskForm):
 	start_time = TextField("Start")
 	end_time = TextField("End")
 	url = TextField("URL")
+	geo_attempt = TextField("geocode_attempt")
 	# stime = DateTimeField(label='Start time(PST)',validators=[validators.InputRequired()],format = "%H:%M",default= datetime.utcnow)
     # etime = DateTimeField(label='End time(PST)',validators=[validators.InputRequired()],format = "%H:%M",default= datetime.utcnow)
 	event_type = SelectField(label='Event Type', choices=EVENT_TYPES)
