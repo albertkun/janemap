@@ -227,7 +227,18 @@
 		}
 	}
 
+	var layer2add = {};
+	var categories = [];
+
 	function addMarker(markerData) {
+		console.log('adding marker'+markerData.type)
+		// create the featuregroup
+		if (typeof(layer2add[markerData.type]) == "undefined")
+		{
+			console.log('adding layer type')
+			layer2add[markerData.type] = new L.featureGroup();
+			categories.push(markerData.type);
+		}
 		// Add marker to map at click location; add popup window
 		// console.log(markerData.lat,markerData.lon);
 		// logic for the campaign offices
@@ -279,7 +290,7 @@
 		else {
 			anything = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6><a href=" + (markerData.url) + " target='_blank'>" + markerData.name + "</h6></a><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date:</b>" + cleanedDate + "<br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(layer2add[markerData.type]);
 		}
-		map.addLayer(markerData.type)
+		// map.addLayer(markerData.type)
 	}
 
 	var popup = L.popup();
@@ -335,6 +346,11 @@
 		{% endif %}
 	{% endfor %}
 	addOffices(campaign_office)
+
+	// loop through categories and add them to the map
+	$.each(categories,function(i,category){
+		map.addLayer(layer2add[category]);
+	})
 
 	$('label').click(function () {
 		labelID = $(this).attr('for');
