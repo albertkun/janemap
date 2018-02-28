@@ -1,13 +1,13 @@
-{% extends "base.html" %} {% block content %}
-
+{% extends "base.html" %}
+{% block content %}
 
 <title>Jane Map</title>
-
-<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+<link rel="shortcut icon" href="../static/img/favicon.png" type="image/x-icon" />
 
 <link rel="stylesheet" href="../static/css/leaflet.css" />
 <script src="../static/js/leaflet.js"></script>
 <script src="../static/js/moment.js"></script>
+<script src="../static/js/leaflet-search.src.js"></script>
 <script type="text/javascript">
 	var event_alias;
 	event_alias = {
@@ -26,20 +26,29 @@
 	colors = {
 		official: '#AF1E23',
 		jane: '#AF1E23',
-		canvassing: '#0B4574',
-		house_party: '#0B4574',
-		phone_banking: '#0B4574',
-		voter_reg: '#0B4574',
-		meeting: '#0B4574',
-		fundraiser: '#0B4574',
-		rally: '#0B4574',
-		other: '#0B4574'
+		canvassing: '#C52633',
+		house_party: '#C52633',
+		phone_banking: '#C52633',
+		voter_reg: '#C52633',
+		meeting: '#C52633',
+		fundraiser: '#C52633',
+		rally: '#C52633',
+		other: '#413f3e'
 	}
 
 	var items = [];
 	var zipcodes = {};
-
+	var circle;
+	var layerNames=[];
+	var IDlist=[]
 </script>
+<script>
+		function fbShare(url, title, descr, image, winWidth, winHeight) {
+			var winTop = (screen.height / 2) - (winHeight / 2);
+			var winLeft = (screen.width / 2) - (winWidth / 2);
+			window.open('http://www.facebook.com/sharer.php?s=100&p[title]=' + title + '&p[summary]=' + descr + '&p[url]=' + url + '&p[images][0]=' + image, 'sharer', 'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight);
+		}
+	</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT Sans">
 <link rel="stylesheet" href="../static/css/styles.css">
 <div id="header">
@@ -49,36 +58,41 @@
 	<p class="lead">
 		<b style="font-size: 24px">Jane Map</b>
 		<br>Let's get started on electing a progressive mayor for San Francisco.
-		<a href="/host">
-			<br>
+	<span style="padding-left:350px" class="fb-share-button"><a href="javascript:fbShare('http://janemap.herokuapp.com/', 'Fb Share', 'Facebook share popup', '../static/img/fb_share.png', 520, 350)"><img src='../static/img/fb.png' /><span>Share</span></a></span>
+	</p>
+	
 </div>
+
+
+	
 <a href="/host">
 	<button type="button" id="host-button" class="btn btn-danger">Host an Event</button>
 </a>
 </p>
 </div>
-<hr>
 
 <div id="map"></div>
-<div class='map-overlay top'>
-	<div class='map-overlay-inner'>
+<div class='contents'>
+	<div class='contents-inner-filters'>
 		<form class="filtermenu">
-			<span class="subHeader">Filters</span>
+			<span class="subHeader">Locate Events</span>
 			<div class="form-row">
 				<div class="col">
 					<label class="subHeader">By Zipcode</label>
-					<input id="zipcodeform" class="form-control zipcode" type="text" maxlength="5" placeholder="   ZIPCODE">
+					<input id="zipcodeform" class="form-control zipcode" type="text" maxlength="5" placeholder="ZIPCODE">
 				</div>
-				<div class="col">
+				<!-- hidden for now -->
+				<div class="col" style="display:none">
 					<label class="subHeader">Distance</label>
-					<select class="form-control distance">
-						<option value="">1mi</option>
-						<option value="">2mi</option>
-						<option value="" selected>5mi</option>
-						<option value="">10mi</option>
+					<select id="eventRadius" class="form-control distance">
+						<option value="1">1mi</option>
+						<option value="2">2mi</option>
+						<option value="5" selected>5mi</option>
+						<option value="10">10mi</option>
 					</select>
 				</div>
-				<div class="col">
+				<!-- hidden for now -->
+				<div class="col" style="display:none">
 					<label class="subHeader">Sort by</label>
 					<select class="form-control sortby">
 						<option value="" selected>Time</option>
@@ -87,31 +101,33 @@
 				</div>
 			</div>
 
-			<span class="subHeader">Search by event</span>
+			<span class="subHeader">Filter by event</span>
 			<div class="form-row">
 				<div class="col">
 					<label for='office_group'>
-						<img style="max-width:13px;vertical-align: middle" src="../static/img/star.png">
+						<img id='office_group' style="max-width:13px;vertical-align: middle" src="../static/img/star.png">
 						<span> Campaign Office</span>
 					</label>
 				</div>
-				{% set cnt = [0] %} {% for eventTypes in eventTypeGroups %} {% if cnt.append(cnt.pop() + 1) %}{% endif %}
+				{% set cnt = [0] %}
+				{% for eventTypes in eventTypeGroups %}
+					{% if cnt.append(cnt.pop() + 1) %}
+				{% endif %}
 				<!-- add form-row and col divs if the row is even! -->
 				{% if cnt[0]%2 == 0 %}
 				<div class="form-row">
 					<div class="col">
-						{% endif %}
-						<div class="col">
-							<label for='{{eventTypes.event_type}}'>
-								<img {% if eventTypes.event_type=='official' %} src="../static/img/red_marker.png" style="max-width:15px;vertical-align: middle"
-								 {% else %} src="../static/img/blue_marker.png" style="max-width:10px;vertical-align: middle" {% endif %}>
-								<span style="text-transform:capitalize;"> {{eventTypes.event_type}}</span>
-							</label>
-							<!-- end the div for form-row if the counter isn't even -->
-							{% if cnt[0]%2 != 0 %}
-						</div>
-						{% else %}
-						<!-- end the div for column -->
+				{% endif %}
+					<div class="col">
+						<label for='{{eventTypes.event_type}}'><svg height="12" width="12">
+							<circle cx="6" cy="6" r="6" stroke="white" stroke-width="1" opacity="0" id='{{eventTypes.event_type}}'></svg>
+							<span style="text-transform:capitalize;"> {{eventTypes.event_type}}</span>
+						</label>
+					<!-- end the div for form-row if the counter isn't even -->
+					{% if cnt[0]%2 != 0 %}
+					</div>
+					{% else %}
+					<!-- end the div for column -->
 					</div>
 				</div>
 				{% endif %}
@@ -128,73 +144,85 @@
 			</div>
 			<div class="form-row">
 				<div class="col">
-					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Canvassing</span></label>
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/marker_on.png"><span>Canvassing</span></label>
 				</div>
 				<div class="col">
-					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Fundraising</span>
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/marker_on.png"><span>Fundraising</span>
 					</label>
 				</div>
 			</div>
 			<div class="form-row">
 				<div class="col">
-					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Voter Registration</span></label>
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/marker_on.png"><span>Voter Registration</span></label>
 				</div>
 				<div class="col">
-					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Rally</span></label>
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/marker_on.png"><span>Rally</span></label>
 				</div>
 			</div>
 			<div class="form-row">
 				<div class="col">
-					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Meeting</span></label>
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/marker_on.png"><span>Meeting</span></label>
 				</div>
 				<div class="col">
-					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/blue_marker.png"><span>Other</span></label>
+					<label><img style="max-width:10px;vertical-align: middle" src="../static/img/marker_on.png"><span>Other</span></label>
 				</div>
 			</div> -->
-
-			<!-- <div style="font-size: 12px;text-align: center"><a href="#">Show All</a> • <a href="#">Hide All</a></div> -->
+			<!-- <div style="font-size: 12px;text-align: center"><a href="#" id='showAll'>Show All</a> • <a href="#" id='hideAll'>Hide All</a></div> -->
 		</form>
-
-		{% for event in events %} {% if event.lat is not none %}
-		<div class="card">
-			<div class="card-header">
-				{% if event.url is not none %}
-				<h5 class="card-title" style="color:#AF1E23;">
-					<a href="{{event.url}}" target="_blank">
-						<span id='eventName_on_card'>{{event.event_name}}</h5>
-				</span>
-				</a>
-				{% else %}
-				<h5 class="card-title" style="color:#AF1E23;">{{event.event_name}}</h5>
-				</a>
-				{% endif %}
-				<div class='btn-xsm btn-outline dark category'>{{event.event_type}}
-				</div>
-			</div>
-			<div class="card-body">
-				<p class="card-text">
-					<b>Hosted by: </b>
-					<a href="mailto:{{event.email}}">{{event.host_name}}</a>
-					<br>
-					<b>Event Date:</b> {{event.event_date.strftime('%A, %B %#d').lstrip('0')}}
-					<br>
-					<b>From:</b>{{event.start_time}} to {{event.end_time}}</p>
-				<p style="font-size:.8rem">{{event.event_description}}</p>
-				<b>{{event.address}}</b>
-				<br>
-				<span class="addressLine2">{{event.city}}, {{event.state}}
-					<br>
-					<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7591006,-122.5050889,12z/ target="_blank">
+	</div><br/>
+	<div class="contents-cards">
+		{% for event in events %}
+			{% if event.lat is not none %}
+				<div class="card" name="{{event.event_type}}" id="{{event.id}}" lat={{event.lat}} lon={{event.lon}}>
+					<div class="card-header"><span style="font-size:14px;color:rgb(116, 116, 116);">
+							{{event.event_date.strftime('%b %#d (%a)').lstrip('0')}}
+							{{event.start_time}} {% if event.end_time is not none %}to {{event.end_time}}{%endif%}</p>
+						{% if event.url is not none %}
+						</span>
+						<h5 class="card-title" style="color:#AF1E23;">
+							<a href="{{event.url}}" target="_blank">
+								<span id='eventName_on_card'>{{event.event_name}}</h5>
+						</span>
+						</a>
+						{% else %}
+						<h5 class="card-title" style="color:#AF1E23;">{{event.event_name}}</h5>
+						</a>
+						{% endif %}
+						<div class='smallEventType'>{{event.event_type}}
+						</div>
+						<div id="distance"></div>
+					</div>
+					<div class="card-body">
+						<p class="card-text">
+						<p style="font-size:.8rem">{{event.event_description}}</p>
+						
+						<b>Hosted by </b>
+						<a href="mailto:{{event.email}}">{{event.host_name}}</a>
 						<br>
-						<button class='btn-xsm btn-danger'>Get Directions</button>
-						</class>
-					</a>
-			</div>
-		</div>
-		<br> {%endif%} {% endfor %}
+						{% if event.location_name|length>2 %}  <b>at</b>
+						<b>{{event.location_name}}</b><br />
+						{% endif %}
+						{{event.address}}
+						<br>
+						<span class="addressLine2">{{event.city}}, {{event.state}}
+							<br>
+								<button type='button' class='btn btn-default rsvpButton' data-container='body' data-html='true' data-toggle='popover' data-placement='top' data-content='<form class=rsvpForm method=post role=form><h6><strong>RSVP for  {{event.event_name}}</strong></h6></input><input name=name placeholder=Name></input><input name=phone placeholder=Phone Number></input><input name=Email placeholder=Email></input><input name=event_id value="{{event.id}}" type=hidden><input value="Confirm RSVP" type="submit"></input></form>'>RSVP</button>
+								<a href=https://www.google.com/maps/dir//{{event.lat}},{{event.lon}}/@37.7591006,-122.5050889,12z/ target="_blank"><button class='btn-xsm btn-dark getDirections'>Get Directions</button>
+								</class>
+							</a>
+					</div>
+				</div>
+				<br> 
+			{%endif%} 
+		{% endfor %}
 	</div>
 </div>
+<!-- temp div for the example code -->
+<div id='ofi_paf'>
+	<div id='ofi_paf_results'></div>
+<!-- end temp div -->
 
+</div>
 <!-- begin the map script -->
 <script>
 
@@ -208,13 +236,58 @@
 
 	function addOffices(markerData) {
 		if (markerData.type == 'office') {
-			office_group = L.marker([markerData.lat, markerData.lon], { icon: officeIcon }).bindPopup("<h6>" + markerData.name + "</h6><div class='box' ><b>Address:</b><br>" + markerData.address + "<br>" + markerData.city + ", " + markerData.state + "<br><b>Office Hours:</b><br>" + markerData.hours + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>").addTo(map)
-
-			map.addLayer(office_group);
+			office_group = new customMarker([markerData.lat, markerData.lon], { type:'office', icon: officeIcon,id:'-1'}).bindPopup("<h6>" + markerData.name + "</h6><div class='box' ><b>Address:</b><br>" + markerData.address + "<br>" + markerData.city + ", " + markerData.state + "<br><b>Office Hours:</b><br>" + markerData.hours + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-dark getDirections'>Get Directions</button></class></a>").addTo(layer2add.office_group)
+			categories.push('office_group')
 		}
 	}
+	customCircleMarker = L.CircleMarker.extend({
+		options: { 
+		   type: '',
+		   id:'',
+		   lat:'',
+		   lon:''
 
+		}
+	 });
+
+	 customMarker = L.Marker.extend({
+		options: { 
+		   type: '',
+		   id:	'',
+		   lat: '',
+		   lon:''
+		}
+	 });
+
+	var layer2add = {};
+	layer2add['office_group'] = new L.featureGroup();
+	layer2add['temp'] = new L.featureGroup();
+	var categories = [];
+	var removedLayers2add={};
+	var removedCategories=[];
+
+	function getLayerNames(data){
+		//create the grouplayers here
+		if (layerNames.includes(data.type)){
+			//console.log('layer already exists')	
+		}
+		else{
+			layerNames.push(data.type)
+			//console.log(data.type+" added to layerNames")
+			//console.log(layerNames)
+		}		
+	}
 	function addMarker(markerData) {
+		getLayerNames(markerData);
+		IDlist.push(markerData.id)
+		//console.log('adding marker '+markerData.type)
+		// create the featuregroup
+		if (typeof(layer2add[markerData.type]) == "undefined")
+		{
+			//console.log('adding layer type')
+			layer2add[markerData.type] = new L.featureGroup();
+			categories.push(markerData.type);
+		}
 		// Add marker to map at click location; add popup window
 		// console.log(markerData.lat,markerData.lon);
 		// logic for the campaign offices
@@ -228,7 +301,11 @@
 				fillColor: '#AF1E23',
 				color: "black",
 				opacity: .7,
-				fillOpacity: .70
+				fillOpacity: .70,
+				type: 'official',
+				id: markerData.id,
+				lat: markerData.lat,
+				lon: markerData.lon
 			}
 		}
 
@@ -241,37 +318,50 @@
 					color: "white",
 					weight: 1,
 					opacity: 1,
-					fillOpacity: 0.9
+					fillOpacity: 0.9,
+					type: markerData.type,
+					id: markerData.id,
+					lat: markerData.lat,
+					lon: markerData.lon
 				}
 		}
 		// console.log(markerData)
 		var dirtyDate = markerData.date
 		// var cleanedDate = dirtyDate.toDateString()
-		var cleanedDate = moment(dirtyDate).format("dddd, MMMM Do");
+		var cleanedDate = moment(dirtyDate).format("MMM Do (ddd)");
+		//console.log(markerData.type)
+		console.log(cleanedDate)
+		var targetIndex = layerNames.indexOf(markerData.type)
+		var targetLayer = layerNames[targetIndex]
+		//console.log('this is the target layer'+targetLayer)
 		if (markerData.url == 'None') {
-			markerData.type = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6>" + markerData.name + "</h6><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date: " + cleanedDate + "</b><br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
-			map.addLayer(markerData.type)
+			anything = new customCircleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<div class='popupDate'>" + cleanedDate + " " + markerData.start_time + " to " + markerData.end_time + "<br></div><h6>" + markerData.name + "</h6><div class='box' ><div class='popup-category'>" + event_alias[markerData.type] + "</div></div><br>"+markerData.description+"<div class='breather'></div><button type='button' class='btn btn-default rsvpButton' data-container='body' data-html='true' data-toggle='popover' data-placement='left' data-content='<form class=\"rsvpForm\" method=\"post\" role=\"form\"><h6><strong>RSVP for  "+markerData.name+"</strong></h6></input><input name=\"name\" placeholder=\"Name\"></input><input name=\"phone\" placeholder=\"Phone Number\"></input><input name=\"Email\" placeholder=\"Email\"></input><input name=\"event_id\" value="+markerData.id+" type=\"hidden\"><input value=\"Confirm RSVP\" type=\"submit\"	onclick="+closeSelf()+"></input></form>'>RSVP</button><br /><h6>"+markerData.address+"</h6><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-dark getDirections'>Get Directions</button></div></a>").addTo(layer2add[targetLayer]);
 		}
 		else {
-			markerData.type = L.circleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<h6><a href=" + (markerData.url) + " target='_blank'>" + markerData.name + "</h6></a><div class='box' ><div class='popup-category' style='background-color:" + colors[markerData.type] + "'>" + event_alias[markerData.type] + "</div></div><br><b>Event Date:</b>" + cleanedDate + "<br><b>From:<b>" + markerData.start_time + " to " + markerData.end_time + "<br><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-danger'>Get Directions</button></class></a>");
+			anything = new customCircleMarker([markerData.lat, markerData.lon], markerOptions).bindPopup("<div class='popupDate'>" + cleanedDate + " " + markerData.start_time + " to " + markerData.end_time + "<br></div><h6><a href=" + (markerData.url) + " target='_blank'>" + markerData.name + "</h6></a><div class='box' ><div class='popup-category'>" + event_alias[markerData.type] + "</div></div><br>"+markerData.description+"<div class='breather'></div><button type='button' class='btn btn-default rsvpButton' data-container='body' data-html='true' data-toggle='popover' data-placement='left' data-content='<form class=\"rsvpForm\" method=\"post\" role=\"form\"><h6><strong>RSVP for  "+markerData.name+"</strong></h6></input><input name=\"name\" placeholder=\"Name\"></input><input name=\"phone\" placeholder=\"Phone Number\"></input><input name=\"Email\" placeholder=\"Email\"></input><input name=\"event_id\" value="+markerData.id+" type=\"hidden\"><input value=\"Confirm RSVP\" type=\"submit\" onclick="+closeSelf()+"></input></form>'>RSVP</button><br /><h6>"+markerData.address+"</h6><a href=https://www.google.com/maps/dir//" + markerData.lat + "," + markerData.lon + "/@37.7591006,-122.5050889,12z/ target='_blank'><button class='btn-xsm btn-dark getDirections'>Get Directions</button></div></a>").addTo(layer2add[targetLayer]);
 		}
-		map.addLayer(markerData.type)
+		// map.addLayer(markerData.type)
 	}
 
 	var popup = L.popup();
 
-	// toggle variable to use in togglePoints();
-	window.toggle = false;
-
-	function togglePoints(group) {
-		if (!toggle) {
-			map.removeLayer(group);
+	function add2layers(layer){
+		if (layer){
+			map.addLayer(layer2add[layer]);
 		}
-		else {
-			map.addLayer(group);
+		else{
+			$.each(categories,function(i,category){
+				map.addLayer(layer2add[category]);
+			})
 		}
-		toggle = !toggle;
 	}
+
+	//used to round distance to the nearest .1 decimal.. because javascript sucks...
+	function precisionRound(number, precision) {
+		var factor = Math.pow(10, precision);
+		return Math.round(number * factor) / factor;
+	  }
+
 
 	/////// here comes the data //////
 	// first campaign office <=== should really be in a data table..
@@ -290,46 +380,87 @@
 		iconSize: [15, 15], // size of the icon
 		iconAnchor: [10, 10], // point of the icon which will correspond to marker's location
 		shadowAnchor: [12, 12],  // the same for the shadow
-		popupAnchor: [0, -10] // point from which the popup should open relative to the iconAnchor
+		popupAnchor: [0, -10], // point from which the popup should open relative to the iconAnchor
 	});
 
 	// data from database
 	{% for theEvent in events %}
-	{% if theEvent.lat is not none %}
-	markerData = {
-		lat: {{ theEvent.lat }},
-	lon: { { theEvent.lon } },
-	date: "{{theEvent.event_date}}",
-		start_time: "{{theEvent.start_time}}",
-			end_time: "{{theEvent.end_time}}",
-				name: "{{theEvent.event_name}}",
+		{% if theEvent.lat is not none %}
+			markerData = {
+					lat: {{ theEvent.lat }},
+					lon: {{ theEvent.lon }},
+					date: "{{theEvent.event_date}}",
+					start_time: "{{theEvent.start_time}}",
+					end_time: "{{theEvent.end_time}}",
+					description: "{{theEvent.event_description}}",
+					name: "{{theEvent.event_name}}",
 					type: "{{theEvent.event_type}}",
-						url: "{{theEvent.url}}"
-		}
-	addMarker(markerData);
-	console.log(markerData.lat)
-	{% endif %}
+					address:"{{theEvent.full_address()}}",
+					url: "{{theEvent.url}}",
+					id: "{{theEvent.id}}"
+				}
+			addMarker(markerData);
+			//console.log(markerData.lat)
+		{% endif %}
 	{% endfor %}
 	addOffices(campaign_office)
+	add2layers()			
 
+	// loop through categories and add them to the map
+
+
+	//togglePoints(labelID)
+
+	function layerToggler(label){
+		if (map.hasLayer(layer2add[label])){
+			if (map.hasLayer(layer2add.temp)){
+				map.removeLayer(layer2add.temp)
+				delete layer2add.temp;
+			}
+			map.removeLayer((layer2add[label]))
+			$(".card[name="+label+"]").hide();
+			switch(label){
+				case 'office_group':
+					$("#"+label+"").attr('src',"../static/img/star-gray.png");
+					break;
+				default:
+					$("#"+label+"").attr("fill","gray");
+					break;
+			}
+		}
+		else{
+			map.addLayer((layer2add[label]))
+			$(".card[name="+label+"]").show()
+			switch(label){
+				case 'office_group':
+					$("#"+label+"").attr('src',"../static/img/star.png");
+					break;
+				default:
+					$("#"+label+"").attr('fill',colors[label]);
+					break;
+				}	
+		}
+	}
 	$('label').click(function () {
 		labelID = $(this).attr('for');
-		console.log(labelID)
-		if (labelID == 'office_group') {
-			if (map.hasLayer(office_group)) {
-				map.removeLayer(office_group)
-				$('.office_group').html('<label for="office_group"><img style="max-width:13px;vertical-align: middle" src="../static/img/star-gray.png"><span>Campaign Office</span></label>')
-			}
-			else {
-				map.addLayer(office_group)
-				$('.office_group').html('<label for="office_group"><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>')
-			}
+		layerToggler(labelID)
 
-		}
 	});
 
 	$('#map').css('width', $(window).width() - 320)
-	$('.map-overlay').css('height', $(window).height() - 55) //for side panel height
+	$('.contents-cards').css('height', $(window).height() - 265) //for side panel height
+
+	// need to add search control for the layers here
+	var search_control = new L.Control.Search({
+		layer: categories,
+		circleLocation: true
+	});
+
+	// Convert miles to meters to set radius of circle
+	function milesToMeters(miles) {
+		return miles * 1069.344;
+	};
+
 
 
 	function zipcodeSearch(items) {
@@ -340,6 +471,8 @@
 				if (items[i].zip == zipForm) {
 					latlng = [items[i].lat, items[i].lon]
 					map.panTo(latlng);
+
+					getEventsRadius(latlng)
 				}
 			}
 
@@ -347,26 +480,199 @@
 		});
 	}
 
-	function searchZip(zipForm) {
+	//get radius of circle (dont worry it wont be drawn on map)
+	function getEventsRadius(circleCenter){
+		var radius = milesToMeters($('#eventRadius').val());
+		circle = L.circle(circleCenter, radius)
 
-		console.log(items.find(zipForm));
+		//count the number of circles		
+		pointsInCircle(circle, radius)
 	}
 
+	function metersToMiles(meters) {
+		return meters * 0.000621371192;
+	};
+
+	function addDistanceData(layer,distance){
+		//console.log('here is the layers id:')
+		//console.log(layer.options.id)
+		$.each(IDlist,function(i, thisID){
+			//console.log(thisID)
+			if (thisID == layer.options.id){
+				cleanDistance = precisionRound(distance,1)
+				$('#'+thisID).find( "#distance" ).html('<div id="distance">'+cleanDistance+' mi. away</div>')
+			}			
+		})
+		var body = $(".contents");
+		body.stop().animate({scrollTop:0}, 500, 'swing', function() { 
+		});
+	}
+
+	function filterLayers(category,meters_user_set,counter_points_in_circle){
+		layer2add[category].eachLayer(function(layer) {			
+			// Lat, long of current point
+			if (layer.getLatLng()){
+				layer_lat_long = layer.getLatLng();
+				//console.log(layer.options.type)
+				distance_from_layer_circle = layer_lat_long.distanceTo(circle_lat_long);
+				//console.log (distance_from_layer_circle)
+				}
+			//layerID = layer.getLayerId();
+			distance = metersToMiles(distance_from_layer_circle)
+			//console.log('yo this is the distance_from of ' +layer.options.type)
+
+			addDistanceData(layer,distance)
+			//need to find out how to add removed markers..
+			if (distance_from_layer_circle <= meters_user_set) {
+				//counter_points_in_circle += 1;
+				//add2layers(layer)
+				
+				//console.log(layer.properties)
+				//var ofi_paf_html = '<h4>' + counter_points_in_circle + '</h4>';
+				// Convert to miles
+				//ofi_paf_html += 'Distance: ' + (distance_from_layer_circle * 0.000621371).toFixed(2) + ' miles';
+
+				//$('#ofi_paf').append(ofi_paf_html);
+			}
+			else{
+				//this is the logic for removing the markers..
+				//removedLayers.push(layer)
+				//console.log(removedLayers)
+				//layer.remove()
+			}
+		})
+	}
+	// This figures out how many points are within out circle
+	function pointsInCircle(circle, meters_user_set) {
+		if (circle !== undefined) {
+		// Only run if we have an address entered
+		// Lat, long of circle
+		circle_lat_long = circle.getLatLng();
+
+		var counter_points_in_circle = 0;
+
+			// Loop through each point in <--- need to change to grouplayers!!!!
+			$.each(categories,function(i,category){
+				if(category.length >= 1){
+				filterLayers(category,meters_user_set,counter_points_in_circle)}	
+			})
+
+				// Distance from our circle marker
+				// To current point in meters
+
+
+				// See if meters is within raduis
+				// The user has selected
+
+		}
+	// Close pointsInCircle
+	};	
+
+	// Change circle radius when changed on page
+	function changeCircleRadius(e) {
+		// Determine which geocode box is filled
+		// And fire click event
+
+		// This will determine how many markers are within the circle
+		pointsInCircle(circle, milesToMeters($('#eventRadius').val()))
+
+		// Set radius of circle only if we already have one on the map
+		if (circle) {
+			circle.setRadius(milesToMeters($('#eventRadius').val()));
+		}
+	}
+
+	function searchZip(zipForm) {
+		
+		//console.log(items.find(zipForm));
+	}
+
+	function initColorLabels(){
+		$("label").find('circle').each(function(i,circle) {
+			console.log("logging this color label:");
+			parentLabel = $(this).closest('label').attr('for')
+			console.log(parentLabel);
+			circle.setAttribute('opacity',1)
+			circle.setAttribute('fill',colors[parentLabel])
+		  });
+	}
 	// this is the function to reset the search
 	// Some simple jQuery to remove the default search value when the user clicks the box
 	$(document).ready(function () {
-
+			//Popover, activated by clicking
+			$('[data-toggle="popover"]').popover()
+			map.on('popupopen', function(openEvent){
+				$(function () {
+				  $('.rsvpButton').popover();
+				  $('.leaflet-popup-content').on('click', function (e) {
+					//only buttons
+					if ($(e.target).data('toggle') !== 'popover'
+						&& $(e.target).parents('.popover.in').length === 0) { 
+						$('[data-toggle="popover"]').popover('hide');
+					}
+				});	 
+				});
+			  });
+			map.on('click',function(e){
+				if($('.popover-body').parent().hasClass('popover fade show bs-popover-right')){
+					$('.popover-body').remove()
+				}
+			})
+			$(document).on('click', function (e) {
+				//only buttons
+				console.log('hello')
+				if ($(e.target).data('toggle') !== 'popover'
+					&& $(e.target).parents('.popover.in').length === 0) { 
+					$('[data-toggle="popover"]').popover('hide');
+				}
+			});	  				  
 		$.getJSON("../static/js/ca_postal_codes.json", function (data) {
 			$.each(data, function (key, val) {
 				items.push(val);
 			});
-			console.log(items)
+			//console.log(items)
 		})
 		zipcodeSearch(items)
 		var newObj = Object.assign({}, items)
-		console.log(newObj)
+		//console.log(newObj)
+
+		$('.card').hover(function() {
+			if (map.hasLayer(layer2add.temp)){
+				map.removeLayer(layer2add.temp)
+				delete layer2add.temp;
+			}
+
+			layer2add['temp'] = new L.featureGroup();
+			thisLat = ($(this).attr('lat'))
+			thisLon = ($(this).attr('lon'))
+			thisID = ($(this).attr('id'))
+			markerOptions={
+				radius: 25,
+				fillColor: "gray",
+				color: "darkgray",
+				weight: .25,
+				opacity: 1,
+				fillOpacity: 0.25,
+				type: markerData.type,
+				id: markerData.id
+			}
+				anything = new customCircleMarker([thisLat,thisLon],markerOptions).addTo(layer2add.temp)
+				map.addLayer(layer2add.temp)
+		 });
+		 $('#map').hover(function(){
+			if (map.hasLayer(layer2add.temp))
+			{
+				map.removeLayer(layer2add.temp)
+				delete layer2add.temp;
+			}
+		 })
+		 initColorLabels()
 	});
 
+	function closeSelf(){
+		// do something
+		   window.close();
+		}
 
 	// disables pressing enter which resets the search...
 	function stopRKey(evt) {

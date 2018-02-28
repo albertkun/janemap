@@ -14,30 +14,23 @@ db = PostgresqlDatabase(database=Config.DATABASE, user=Config.USERNAME, password
 # Connect to our database.
 db.connect()
 
-
-
-class People(Model):
-    uid = CharField()
-    first_name = CharField()
-    last_name = CharField()
+class RSVPs(Model):
+    name = CharField()
     email = CharField()
     phone = CharField()
-   #event_username = TextField("User Name")
-   #password = TextField("User Name")
-
-    def full_name(self):
-        return "{} {}".format(self.first_name,self.last_name)
+    event_id = IntegerField()
 
     class Meta:
-    # data is coming from schools.db
+    # data is coming from rsvps.db
         database = db
-        db_table = 'people'
+        db_table = 'rsvps'
 
 # Define what a 'Event' is
 class Event(Model):
 	# These are all the fields it has
 	# match up CharField/IntegerField/etc with correct type
 	#uid = CharField(primary_key=True) # primary key = unique id
+	id = IntegerField(primary_key=True)
 	host_name = CharField()
 	email = CharField()
 	phone = CharField()
@@ -47,12 +40,12 @@ class Event(Model):
 	end_time = CharField()
 	event_type = CharField()
 	event_description = CharField(null = True)
-	neighborhood = CharField(null = True)
+	location_name = CharField(null = True)
 	address = CharField()
 	city = CharField()
 	state = CharField()
 	zipcode = FixedCharField(null = True,max_length=5)
-	attendees = IntegerField(null = True)
+	max_attendees = IntegerField(null = True)
 	url = CharField()
 	lat = DecimalField(null = True)
 	lon = DecimalField(null = True)
@@ -66,3 +59,4 @@ class Event(Model):
 		database = db
 		# and it's in the table called 'events'
 		db_table = 'events'
+		primary_key = False
