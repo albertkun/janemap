@@ -23,7 +23,7 @@ def geocoder():
                 event.lat = coords['lat']
                 event.lon = coords['lng']
                 # And now save it to the database
-                #print "{} is at {}, {}".format(event.event_name, event.lat, event.lon)
+                print "{} is at {}, {}".format(event.event_name, event.lat, event.lon)
                 event.save()
             except:
               print "Failed to query/save for {}".format(event.event_name)

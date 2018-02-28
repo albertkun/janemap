@@ -2,62 +2,32 @@
 {% block content %}
 <style type="text/css">
   .mainblock{
-	margin-left: 20px
+	margin-left: 20px;
+	margin-right:20px;
   }
-
+	.requiredStar{
+		color: rgb(218, 29, 57);
+		font-size: 12px;
+	}
 </style>
 
 
  <div class="mainblock">
 	<h2 align="center" ">Host an activity for Jane Kim</h2>
-	<p stye='text-align: left !important'>The best way to help Jane get elected is through local actions together. Feel free to host an event by filling in form below. Let us know if you have any questions or issues.
-
-
-	<!--     <div class="form-group">
-		<label for="first_name">Name:</label>
-		<input type="text" class="form-control" id="first_name" name="first_name" placeholder="First name">
-		<br>
-		<label for="last_name">Name:</label>
-		<input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last name">
-		<br>
-		<label for="email">Email:</label>
-		<input type="text" class="form-control" id="email" name="email" placeholder="Your email will be used to contact you.">
-		<br>
-		<label for="phone">Phone:</label>
-		<input type="phone" class="form-control" id="phone" name="phone" placeholder="Enter a phone.">
-
-
-	  </div>
-	  <button type="submit" class="btn btn-success">Sign Up</button> -->
-
-
-	<!--   </form>
-	<form action="" method="post" data-toggle="validator" role="form">
-	<div class="form-group has-feedback">
-	  <label for="host_name" class="control-label ">Host Name</label>
-	  <input type="text" class="form-control" id="host_name" placeholder="Host Name" required>
-	  <label for="last_name" class="control-label">Last Name</label>
-	  <input type="text" class="form-control" id="last_name" placeholder="Last Name" required>
-	  <label for="host_email" class="control-label">Host Email</label>
-	  <input type="text" class="form-control" id="host_email" pattern="[A-Za-z0-9]+@[A-Za-z0-9]+.[A-Za-z0-9]+{1,}$" placeholder="Email" required>
-		<label for="host_phone" class="control-label">Host Phone</label>
-	  <input type="text" class="form-control" id="host_phone" pattern="[0-9]+{,11}" placeholder="Phone" required>
-	</div>
-	</form>
-	-->
-
+	<p stye='text-align: left !important'>The best way to help Jane get elected is through local actions together. Feel free to host an event by filling in form below. Let us know if you have any questions or issues.<br />
+		<span class="requiredStar">*Required field</span>
 	<form class="needs-validation" validate action="" method="post" role="form">
 
 	<div class="form-row">
 	  <div class="col-sm-5 mb-4 mt-2">
-		<label for="host_name">Name of Host</label>
+		<label for="host_name">Name of Host</label><span class="requiredStar">*</span>
 		<input type="text" class="form-control" name="host_name" id="host_name" placeholder="Host name" value="" required>
 		<div class="valid-feedback">
 		  Looks good!
 		</div>
 	  </div>
 	  <div class="col-sm-4 mb-4 mt-2">
-		<label for="validationCustomUsername"> Email</label>
+		<label for="validationCustomUsername"> Email</label><span class="requiredStar">*</span>
 		<div class="input-group">
 		  <input type="email" class="form-control" name="email" id="email" placeholder="Email" aria-describedby="inputGroupPrepend" required>
 		  <div class="invalid-feedback">
@@ -66,7 +36,7 @@
 		</div>
 	  </div>
 	  <div class="col-sm-2 mb-4 mt-2">
-		<label for="phone">Phone</label>
+		<label for="phone">Phone</label><span class="requiredStar">*</span>
 		<div class="input-group">
 		  <input type="phone" class="form-control" name="phone" id="phone" placeholder="Phone #" aria-describedby="inputGroupPrepend">
 		</div>
@@ -76,7 +46,7 @@
 
 	<div class="form-row">
 	  <div class="col-sm-4 mb-4 mt-2">
-		<label for="event_name">Name of Event</label>
+		<label for="event_name">Name of Event</label><span class="requiredStar">*</span>
 		<input type="text" class="form-control"  name="event_name" id="event_name" placeholder="Event name" required>
 		<div class="valid-feedback">
 		  Looks good!
@@ -84,7 +54,7 @@
 	  </div>
 
 	  <div class="col-sm-2 mb-4 mt-2">
-		<label for="event_date">Event Date</label>
+		<label for="event_date">Event Date</label><span class="requiredStar">*</span>
 		<div class="input-group">
 		  <input type="date" class="form-control" name="event_date" id="event_date" placeholder="Phone #" aria-describedby="inputGroupPrepend" required>
 		  <div class="invalid-feedback">
@@ -94,7 +64,7 @@
 	  </div>
 
 	  <div class="col-sm-2 mb-4 mt-2">
-		<label for="start_time">Start Time</label>
+		<label for="start_time">Start Time</label><span class="requiredStar">*</span>
 		<div class="input-group">
 		  <input type="time" class="form-control" name="start_time" id="start_time" aria-describedby="inputGroupPrepend" required>
 		  <div class="invalid-feedback">
@@ -114,22 +84,17 @@
 	  </div>
 
 	  <div class="col-sm-3 mb-4 mt-2">
-		<label for="event_type">Event Type</label>
+		<label for="event_type">Event Type</label><span class="requiredStar">*</span><br/>
 		{{ form.event_type }}
-		 <!-- add drop down -->
-
-	<!--         <select id="event_type" name="event_type" class="form-control">
-			<option value="canvass">Canvassing</option>
-			<option value="phone">Phone Bank</option>
-			<option value ="voter">Voter Registration</option>
-			<option value ="meeting">Meeting</option>
-			<option value ="fund">Fundraiser</option>
-			<option value ="rally">Rally</option>
-			<option value ="other">Other</option>
-		  </select> -->
-	  </div>
-	  <div class="col-sm-12 mb-4 mt-2">
-		<label for="event_description">Event Description</label>
+		</div>
+		<div class="col-sm-2 mb-4 mt-2">
+				<label for="max_attendees">Max Attendees</label>
+				<div class="input-group">
+						<input type="number" name="max_attendees" id="max_attendees" placeholder="25"></input>
+					</div>
+				</div>
+	  <div class="col-sm-10 mb-4 mt-2">
+		<label for="event_description">Event Description</label><span class="requiredStar">*</span>
 		<div class="input-group">
 		  <textarea class="form-control" name="event_description" id="event_description" placeholder="Describe the event" aria-describedby="inputGroupPrepend" required></textarea>
 		  <div class="invalid-feedback">
@@ -139,8 +104,16 @@
 
 
 	<div class="form-row">
+		<div class="col-sm-3 mb-3 mt-2">
+					<label for="location_name">Location Name</label>
+					<input type="text" class="form-control" id="location_name" name="location_name" placeholder="My House">
+					<div class="valid-feedback">
+						Looks good!
+					</div>
+		</div>
+
 	  <div class="col-sm-4 mb-4 mt-2">
-		<label for="address">Event Address</label>
+		<label for="address">Event Address</label><span class="requiredStar">*</span>
 		<input type="text" class="form-control" id="address" name="address" placeholder="Street Address or Cross Streets" required>
 		<div class="valid-feedback">
 		  Looks good!
@@ -148,33 +121,30 @@
 	  </div>
 
 	  <div class="col-sm-2 mb-4 mt-2">
-		<label for="city">City</label>
+		<label for="city">City</label><span class="requiredStar">*</span>
 		<input type="text" class="form-control" id="city" name="city" value="San Francisco" required>
 		<div class="invalid-feedback">
 		  Please provide a valid city.
 		</div>
 	  </div>
 	  <div class="col-sm-1 mb-4 mt-2">
-		<label for="state">State</label>
+		<label for="state">State</label><span class="requiredStar">*</span>
 		<input type="text" class="form-control" id="state" name="state" value="CA" required>
 		<div class="invalid-feedback">
 		  Please provide a valid state.
 		</div>
 	  </div>
-	  <div class="col-sm-2 mb-4 mt-2">
+	  <div class="col-sm-2 mb-2 mt-2">
 			<label for="zipcode">Zip</label>
 			<input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Zip">
 			<div class="invalid-feedback">
 				Please provide a valid zip.
 			</div>
 	  </div>
-	  <div class="col-sm-12 mb-4">
+	  <div class="col-sm-8 mb-4">
 		<label for="url">Event Website</label>
 		<div class="input-group">
-		  <input type="text" class="form-control" id="url" name="url" placeholder="URL" aria-describedby="inputGroupPrepend" required></textarea>
-		  <div class="invalid-feedback">
-			Is there a link to the event?
-		  </div>
+		  <input type="text" class="form-control" id="url" name="url" placeholder="URL" aria-describedby="inputGroupPrepend"></textarea>
 		</div>
 	</div>
 	<input type="text" style="display: none" value="false" id="geocode_attempt" name="geocode_attempt">	
