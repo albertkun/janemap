@@ -626,7 +626,7 @@
 				if($('.popover-body').parent().hasClass('popover fade bs-popover-top show')){
 					if($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0 )
 					{
-						if(($(e.target).attr('class')==='rsvpForm' || $(e.target).attr('class') === undefined)){
+						if(($(e.target).attr('class')==='rsvpForm' || ($(e.target).attr('class') === undefined))){
 							console.log($(e.target).attr('class'))
 						}
 						else{
