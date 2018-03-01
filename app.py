@@ -16,7 +16,7 @@ ma = Marshmallow(app)
 
 
 event_types = ['Campaign Office','Official','Canvassing','Phonebanking','Voter Registration','Meeting',
-				'Fundraising','Rally','Other']
+				'Fundraising','Forum','Meet','Rally','Other']
 
 class EventSchema(ma.Schema):
     class Meta:
@@ -72,6 +72,7 @@ def index():
 		.where(Event.lat.is_null(False) and Event.event_date >= currentDay)
 		.order_by(Event.event_date.asc()))
     db.close()
+    
     # numberRSVPs = (Event.select(Event.id,fn.COUNT(RSVPs)).where(RSVPs.event_id==Event.id).group_by(Event.id))
     if request.method == 'POST':
         rsvp = RSVPs()
