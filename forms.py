@@ -3,8 +3,10 @@ from wtforms import TextField, StringField, IntegerField, DateField,DateTimeFiel
 from wtforms.validators import DataRequired, Email
 
 EVENT_TYPES =[("canvassing","Canvassing"),("phone_banking","Phone banking"),
-				("voter_reg","Voter Registration"),("meeting","Meeting"),
-				("fundraiser","Fundraiser"),("rally","Rally"),("house_party","House Party"),("other","Other")]
+				("voter_reg","Voter Registration"),("meeting","Meeting"), 
+				("fundraiser","Fundraiser"),("rally","Rally"),
+				("house_party","House Party"),("forum", "Forum/Discussion"),
+				("other","Other")]
 
 class EventHostingForm(FlaskForm):
 	host_name = TextField("Host Name")

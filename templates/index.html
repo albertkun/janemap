@@ -16,6 +16,8 @@
 		phone_banking: 'Phone Banking',
 		voter_reg: 'Voter Registration',
 		meeting: 'Meeting',
+		forum: 'Forum',
+		meet: 'Meet',
 		fundraiser: 'Fundraiser',
 		house_party: 'House Party',
 		rally: 'Rally',
@@ -33,6 +35,8 @@
 		meeting: '#C52633',
 		fundraiser: '#C52633',
 		rally: '#C52633',
+		forum:'#7E6AAF',
+		meet: '#018989',
 		other: '#413f3e'
 	}
 
@@ -108,32 +112,24 @@
 						<img id='office_group' style="max-width:13px;vertical-align: middle" src="../static/img/star.png">
 						<span> Campaign Office</span>
 					</label>
+					</div>
 				</div>
-				{% set cnt = [0] %}
-				{% for eventTypes in eventTypeGroups %}
-					{% if cnt.append(cnt.pop() + 1) %}
-				{% endif %}
-				<!-- add form-row and col divs if the row is even! -->
-				{% if cnt[0]%2 == 0 %}
+				{% for eventType in eventTypeGroups |batch(2) %}
 				<div class="form-row">
-					<div class="col">
-				{% endif %}
-					<div class="col">
-						<label for='{{eventTypes.event_type}}'><svg height="12" width="12">
-							<circle cx="6" cy="6" r="6" stroke="white" stroke-width="1" opacity="0" id='{{eventTypes.event_type}}'></svg>
-							<span style="text-transform:capitalize;"> {{eventTypes.event_type}}</span>
-						</label>
-					<!-- end the div for form-row if the counter isn't even -->
-					{% if cnt[0]%2 != 0 %}
-					</div>
-					{% else %}
+						{% for event in eventType %}
+						<div class="col">
+								<label for='{{event.event_type}}'><svg height="12" width="12">
+									<circle cx="6" cy="6" r="6" stroke="white" stroke-width="1" opacity="0" id='{{event.event_type}}'></svg>
+									<span style="text-transform:capitalize;">{{event.event_type}}</span>
+								</label>
+						</div>
+						{% endfor %}
+				</div>					
 					<!-- end the div for column -->
-					</div>
-				</div>
-				{% endif %}
 				<!-- end the rest of the rom -->
-			</div>
-			{% endfor %}
+
+				{% endfor %}
+				
 			<!--  ineffcient method for populating the filters-->
 			<!-- <div class="col">
 					<label for='office_group'><img style="max-width:13px;vertical-align: middle" src="../static/img/star.png"><span>Campaign Office</span></label>
