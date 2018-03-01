@@ -170,7 +170,7 @@
 			<!-- <div style="font-size: 12px;text-align: center"><a href="#" id='showAll'>Show All</a> • <a href="#" id='hideAll'>Hide All</a></div> -->
 		</form>
 	</div><br/>
-	<div class="contents-cards">
+	<div class="list contents-cards">
 		{% for event in events %}
 			{% if event.lat is not none %}
 				<div class="card" name="{{event.event_type}}" id="{{event.id}}" lat={{event.lat}} lon={{event.lon}}>
@@ -615,15 +615,26 @@
 			  });
 			map.on('click',function(e){
 				if($('.popover-body').parent().hasClass('popover fade show bs-popover-right')){
-					$('.popover-body').remove()
+					if($(e.target).data('toggle') !== 'popover'){
+						console.log($(e.target).data('toggle'))
+						$('.popover-body').remove()
+					}
 				}
 			})
 			$(document).on('click', function (e) {
 				//only buttons
-				console.log('hello')
-				if ($(e.target).data('toggle') !== 'popover'
-					&& $(e.target).parents('.popover.in').length === 0) { 
-					$('[data-toggle="popover"]').popover('hide');
+				if($('.popover-body').parent().hasClass('popover fade bs-popover-top show')){
+					if($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0 )
+					{
+						if(($(e.target).attr('class')==='rsvpForm' || $(e.target).attr('class') === undefined)){
+							console.log($(e.target).attr('class'))
+						}
+						else{
+							$('[data-toggle="popover"]').popover('hide');
+							console.log($(e.target).attr('class'))
+						}
+
+					}
 				}
 			});	  				  
 		$.getJSON("../static/js/ca_postal_codes.json", function (data) {
